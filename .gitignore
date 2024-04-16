@@ -1,0 +1,3 @@
+back/templates/base.html.twig
+back/templates/registration/register.html.twig
+back/templates/security/login.html.twig

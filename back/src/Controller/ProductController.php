@@ -10,72 +10,91 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-#[Route('/product')]
+#[Route('api/products')]
 class ProductController extends AbstractController
 {
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(ProductRepository $productRepository): Response
+    public function index(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
-        return $this->render('product/index.html.twig', [
-            'products' => $productRepository->findAll(),
-        ]);
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($productRepository->findAll(), 'json', $context));
     }
 
-    #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'app_product_new', methods: ['POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $product = new Product();
-        $form = $this->createForm(ProductType::class, $product);
-        $form->handleRequest($request);
+        $content = $request->getContent();
+        $product->setName($content["name"]);
+        $product->setDescription($content["description"]);
+        $product->setPhoto($content["photo"]);
+        $product->setName($content["price"]);
+        $errors = $validator->validate($product);
+        if (count($errors) > 0) {
+            $error_message = new Response((string) $errors, 400);
+            return $this->json($error_message);
+        } else {
 
-        if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($product);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+            $context = (new ObjectNormalizerContextBuilder())
+                ->withGroups('api')
+                ->toArray();
+            return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
         }
-
-        return $this->render('product/new.html.twig', [
-            'product' => $product,
-            'form' => $form,
-        ]);
+        //TODO: better error message
+        return $this->json('"Error": "bad Input for new product"');
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
-    public function show(Product $product): Response
+    public function show(Product $product, SerializerInterface $serializer): Response
     {
-        return $this->render('product/show.html.twig', [
-            'product' => $product,
-        ]);
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
     }
 
-    #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}', name: 'app_product_edit', methods: ['PUT'])]
     public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ProductType::class, $product);
-        $form->handleRequest($request);
+        $product = new Product();
+        $content = $request->getContent();
+        $product->setName($content["name"]);
+        $product->setDescription($content["description"]);
+        $product->setPhoto($content["photo"]);
+        $product->setName($content["price"]);
+        $errors = $validator->validate($product);
+        if (count($errors) > 0) {
+            $error_message = new Response((string) $errors, 400);
+            return $this->json($error_message);
+        } else {
 
-        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($product);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+            $context = (new ObjectNormalizerContextBuilder())
+                ->withGroups('api')
+                ->toArray();
+            return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
         }
-
-        return $this->render('product/edit.html.twig', [
-            'product' => $product,
-            'form' => $form,
-        ]);
+        //TODO: better error message
+        return $this->json('"Error": "bad Input for new product"');
     }
 
-    #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
-    public function delete(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}', name: 'app_product_delete', methods: ['DELETE'])]
+    public function delete(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $request->getContent()["id"], $request->getPayload()->get('_token'))) {
             $entityManager->remove($product);
             $entityManager->flush();
+            return Response::HTTP_SUCCESS;
         }
-
-        return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+        return Response::HTTP_BAD_REQUEST;
     }
 }

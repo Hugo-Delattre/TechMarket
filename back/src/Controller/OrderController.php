@@ -10,16 +10,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-#[Route('/order')]
+
+#[Route('/api/orders')]
 class OrderController extends AbstractController
 {
+
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
-    public function index(OrderRepository $orderRepository): Response
+    public function index(OrderRepository $orderRepository, SerializerInterface $serializer): JsonResponse
     {
-        return $this->render('order/index.html.twig', [
-            'orders' => $orderRepository->findAll(),
-        ]);
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
     }
 
     #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
@@ -71,7 +77,7 @@ class OrderController extends AbstractController
     #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
     public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($order);
             $entityManager->flush();
         }
