@@ -6,7 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link } from "lucide-react";
+import Link from "next/link";
 
 export type BreadcrumbProps = {
   // href: string;

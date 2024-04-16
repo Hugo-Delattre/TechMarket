@@ -72,6 +72,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { OrderTableRow } from "@/components/OrderTableRow";
 
 export function OrdersDashboard() {
   return (
@@ -146,19 +147,19 @@ export function OrdersDashboard() {
                         <TableRow>
                           <TableHead>Customer</TableHead>
                           <TableHead className="hidden sm:table-cell">
-                            Type
+                            ID
                           </TableHead>
                           <TableHead className="hidden sm:table-cell">
-                            Status
+                            Products
                           </TableHead>
                           <TableHead className="hidden md:table-cell">
-                            Date
+                            Order Date
                           </TableHead>
                           <TableHead className="text-right">Amount</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        <TableRow className="bg-accent">
+                        {/* <TableRow className="bg-accent">
                           <TableCell>
                             <div className="font-medium">Liam Johnson</div>
                             <div className="hidden text-sm text-muted-foreground md:inline">
@@ -177,29 +178,19 @@ export function OrdersDashboard() {
                             2023-06-23
                           </TableCell>
                           <TableCell className="text-right">$250.00</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <div className="font-medium">Olivia Smith</div>
-                            <div className="hidden text-sm text-muted-foreground md:inline">
-                              olivia@example.com
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            Refund
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            <Badge className="text-xs" variant="outline">
-                              Declined
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            2023-06-24
-                          </TableCell>
-                          <TableCell className="text-right">$150.00</TableCell>
-                        </TableRow>
+                        </TableRow> */}
+                        <OrderTableRow
+                          name={"Thomas"}
+                          id={"1200"}
+                          totalPrice={60}
+                        />
+                        <OrderTableRow
+                          name={"Aaaaaah"}
+                          id={"1150"}
+                          totalPrice={80}
+                        />
 
-                        <TableRow>
+                        {/* <TableRow>
                           <TableCell>
                             <div className="font-medium">Olivia Smith</div>
                             <div className="hidden text-sm text-muted-foreground md:inline">
@@ -238,7 +229,7 @@ export function OrdersDashboard() {
                             2023-06-26
                           </TableCell>
                           <TableCell className="text-right">$450.00</TableCell>
-                        </TableRow>
+                        </TableRow> */}
                       </TableBody>
                     </Table>
                   </CardContent>

@@ -131,7 +131,7 @@ export function ProductsDashboard() {
                 <CardHeader>
                   <CardTitle>Products</CardTitle>
                   <CardDescription>
-                    Manage your products and view their sales performance.
+                    Interested to buy one of our products? Check them out below.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
