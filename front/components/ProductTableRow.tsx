@@ -41,6 +41,8 @@ export const ProductTableRow = ({
       </TableCell>
       <TableCell className="font-medium">{name}</TableCell>
       <TableCell>{description}</TableCell>
+      <TableCell></TableCell>
+      <TableCell></TableCell>
       <TableCell>{price}€</TableCell>
       <TableCell>
         <Button aria-haspopup="true" size="icon" variant="ghost">

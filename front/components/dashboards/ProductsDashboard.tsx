@@ -131,7 +131,7 @@ export function ProductsDashboard() {
                 <CardHeader>
                   <CardTitle>Products</CardTitle>
                   <CardDescription>
-                    Interested to buy one of our products? Check them out below.
+                    The best tech products are here. Check them out below.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -143,123 +143,39 @@ export function ProductsDashboard() {
                         </TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Description</TableHead>
+                        <TableHead className="hidden md:table-cell">
+                          {/* Total Sales */}
+                        </TableHead>
+                        <TableHead className="hidden md:table-cell">
+                          {/* Created at */}
+                        </TableHead>
                         <TableHead>Price</TableHead>
-                        {/* <TableHead className="hidden md:table-cell">
-                          Total Sales
-                        </TableHead> */}
-                        {/* <TableHead className="hidden md:table-cell">
-                          Created at
-                        </TableHead> */}
                         <TableHead>
                           <span className="sr-only">Actions</span>
                         </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          Laser Lemonade Machine
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">Draft</Badge>
-                        </TableCell>
-                        <TableCell>$499.99</TableCell>
-                        {/* <TableCell className="hidden md:table-cell">
-                          25
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2023-07-12 10:42 AM
-                        </TableCell> */}
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            {/* <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent> */}
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-
                       <ProductTableRow
                         id="2435"
-                        name="big burger"
-                        description="cette sauce qui t'accompagne"
-                        image="https://static1.purepeople.com/articles/0/39/51/80/@/5680724-le-youtubeur-thekairi78-jaouad-daouki-1200x0-1.jpg"
-                        price={45}
+                        name="Intel Core i9"
+                        description="La puissance à l'état brut."
+                        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6HyUQbJ-t_4bLCKssd4wcgyeVT11SRkl8D5YDMlOX8Q&s"
+                        price={600}
                       />
-                      {/* <ProductTableRow />
-                      <ProductTableRow /> */}
-
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          Luminous VR Headset
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">Active</Badge>
-                        </TableCell>
-                        <TableCell>$199.99</TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          30
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2024-02-14 02:14 PM
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
+                      <ProductTableRow
+                        id="2436"
+                        name="RTX 4090"
+                        description="La plus performante des cartes graphiques NVIDIA RTX de 4ème génération."
+                        image="https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/ada/rtx-4090/geforce-ada-4090-web-og-1200x630.jpg"
+                        price={900}
+                      />
                     </TableBody>
                   </Table>
                 </CardContent>
                 <CardFooter>
                   <div className="text-xs text-muted-foreground">
-                    Showing <strong>1-10</strong> of <strong>32</strong>{" "}
-                    products
+                    Showing <strong>X-10</strong> of <strong>X</strong> products
                   </div>
                 </CardFooter>
               </Card>
