@@ -1,7 +1,11 @@
-import { LoginForm } from "@/components/LoginForm";
-import React from "react";
+"use client";
+
+import { LoginForm } from "@/components/forms/LoginForm";
+import { ProfileDashboard } from "@/components/dashboards/ProfileDashboard";
+import React, { useState } from "react";
 
 const LoginPage = () => {
+  const [isLoggedIn, setisLoggedIn] = useState(false);
   return (
     <div
       style={{
@@ -11,7 +15,7 @@ const LoginPage = () => {
         height: "100vh",
       }}
     >
-      <LoginForm />
+      {isLoggedIn ? <ProfileDashboard /> : <LoginForm />}
     </div>
   );
 };
