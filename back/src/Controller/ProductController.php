@@ -18,16 +18,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ProductController extends AbstractController
 {
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(ProductRepository $productRepository,SerializerInterface $serializer): JsonResponse
+    public function index(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
         $context = (new ObjectNormalizerContextBuilder())
-        ->withGroups('api')
-        ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($productRepository->findAll(), 'json',$context));
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($productRepository->findAll(), 'json', $context));
     }
 
     #[Route('/', name: 'app_product_new', methods: ['POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager,SerializerInterface $serializer): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $product = new Product();
         $content = $request->getContent();
@@ -39,28 +39,26 @@ class ProductController extends AbstractController
         if (count($errors) > 0) {
             $error_message = new Response((string) $errors, 400);
             return $this->json($error_message);
-        }
-        else{
+        } else {
 
             $entityManager->persist($product);
             $entityManager->flush();
             $context = (new ObjectNormalizerContextBuilder())
-            ->withGroups('api')
-            ->toArray();
-            return JsonResponse::fromJsonString($serializer->serialize($product, 'json',$context));
+                ->withGroups('api')
+                ->toArray();
+            return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
         }
         //TODO: better error message
         return $this->json('"Error": "bad Input for new product"');
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
-    public function show(Product $product,SerializerInterface $serializer): Response
+    public function show(Product $product, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
-        ->withGroups('api')
-        ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($product, 'json',$context));
-    
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_product_edit', methods: ['PUT'])]
@@ -76,30 +74,27 @@ class ProductController extends AbstractController
         if (count($errors) > 0) {
             $error_message = new Response((string) $errors, 400);
             return $this->json($error_message);
-        }
-        else{
+        } else {
 
             $entityManager->persist($product);
             $entityManager->flush();
             $context = (new ObjectNormalizerContextBuilder())
-            ->withGroups('api')
-            ->toArray();
-            return JsonResponse::fromJsonString($serializer->serialize($product, 'json',$context));
-    
+                ->withGroups('api')
+                ->toArray();
+            return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
         }
         //TODO: better error message
         return $this->json('"Error": "bad Input for new product"');
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['DELETE'])]
-    public function delete(Request $request, EntityManagerInterface $entityManager,SerializerInterface $serializer): Response
+    public function delete(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$request->getContent()["id"], $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $request->getContent()["id"], $request->getPayload()->get('_token'))) {
             $entityManager->remove($product);
             $entityManager->flush();
             return Response::HTTP_SUCCESS;
         }
         return Response::HTTP_BAD_REQUEST;
     }
-    
 }

@@ -18,14 +18,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/api/orders')]
 class OrderController extends AbstractController
 {
-    
+
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
     public function index(OrderRepository $orderRepository, SerializerInterface $serializer): JsonResponse
     {
         $context = (new ObjectNormalizerContextBuilder())
-        ->withGroups('api')
-        ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json',$context));
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
     }
 
     #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
@@ -77,7 +77,7 @@ class OrderController extends AbstractController
     #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
     public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($order);
             $entityManager->flush();
         }
