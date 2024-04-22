@@ -13,8 +13,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-
+use App\Entity\Product;
+use App\Serializer\MyCustomOrderNormalizer;
 #[Route('/api/orders')]
 class OrderController extends AbstractController
 {
@@ -28,32 +28,40 @@ class OrderController extends AbstractController
         return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
     }
 
-    #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'app_order_new', methods: ['POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager,SerializerInterface $serializer): JsonResponse
     {
         $order = new Order();
-        $form = $this->createForm(OrderType::class, $order);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($order);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
+        $content = json_decode($request->getContent(), true);
+        $products = array();
+        foreach ($content["productsId"] as $value) {
+            $product = $entityManager->getRepository(Product::class)->findOneById($value["id"]);
+            array_push($products,$product);
+            
         }
-
-        return $this->render('order/new.html.twig', [
-            'order' => $order,
-            'form' => $form,
-        ]);
+        foreach($products as $product){
+            $order->addProduct($product);
+            $product->addOrder($order);
+            $order->setTotalPrice($order->getTotalPrice()+$product->getPrice());
+        }
+        
+        $order->setCreationDate(new \DateTime());
+        $entityManager->persist($order);
+        $entityManager->flush();
+        $context = (new ObjectNormalizerContextBuilder())
+                ->withGroups('api')
+                ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
     }
-
+    
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
-    public function show(Order $order): Response
+    public function show(Order $order,SerializerInterface $serializer): Response
     {
-        return $this->render('order/show.html.twig', [
-            'order' => $order,
-        ]);
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
+    
     }
 
     #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]

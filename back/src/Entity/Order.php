@@ -33,7 +33,7 @@ class Order
      */
     #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'orders')]
     #[Groups(['api'])]
-    #[SerializedPath('[]')]
+    #[SerializedPath('')]
     private Collection $products;
 
     public function __construct()
@@ -80,10 +80,7 @@ class Order
 
     public function addProduct(Product $product): static
     {
-        if (!$this->products->contains($product)) {
-            $this->products->add($product);
-        }
-
+        $this->products->add($product);
         return $this;
     }
 
