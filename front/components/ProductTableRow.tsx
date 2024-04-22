@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import { addToCart } from "@/utils/cardUtils";
 
 export type ProductTableRowProps = {
   id: string;
@@ -28,6 +29,8 @@ export const ProductTableRow = ({
   description,
   price,
 }: ProductTableRowProps) => {
+  console.log("Hello Table Row");
+
   return (
     <TableRow className="w-full">
       <TableCell className="hidden sm:table-cell">
@@ -45,7 +48,14 @@ export const ProductTableRow = ({
       <TableCell></TableCell>
       <TableCell>{price}€</TableCell>
       <TableCell>
-        <Button aria-haspopup="true" size="icon" variant="ghost">
+        <Button
+          aria-haspopup="true"
+          size="icon"
+          variant="ghost"
+          onClick={() => {
+            addToCart({ id, image, name, description, price });
+          }}
+        >
           <ShoppingCart className="h-4 w-4" />
         </Button>
         <DropdownMenu>
