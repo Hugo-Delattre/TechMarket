@@ -1,42 +1,71 @@
 import { Badge } from "@/components/ui/badge";
-import { TableCell, TableRow } from "@/components/ui/table";
-import { ProductTableRowProps } from "./ProductTableRow";
+import { Button } from "@/components/ui/button";
+import { TableRow, TableCell } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-export type OrderTableRowProps = {
-  name: string;
+export type ProductTableRowProps = {
   id: string;
-  products?: ProductTableRowProps[];
-  creationDate?: Date;
+  image: string;
+  name: string;
+  description: string;
   totalPrice: number;
+  stripeLink?: string;
 };
 
-export const OrderTableRow = ({
-  name,
+export const ProductTableRow = ({
   id,
-  products,
-  creationDate,
+  image,
+  name,
+  description,
   totalPrice,
-}: OrderTableRowProps) => {
+  stripeLink,
+}: ProductTableRowProps) => {
   return (
-    <TableRow>
-      <TableCell>
-        <div className="font-medium">{name}</div>
-        <div className="hidden text-sm text-muted-foreground md:inline">
-          buyer mail
-        </div>
-      </TableCell>
-      <TableCell className="hidden sm:table-cell">{id}</TableCell>
+    <TableRow className="w-full">
       <TableCell className="hidden sm:table-cell">
-        {products?.map((product) => product.name).join(", ")}
-        {/* <Badge className="text-xs" variant="outline">
-          Declined
-        </Badge> */}
+        <Image
+          alt={`${name} image`}
+          className="aspect-square rounded-md object-cover"
+          height="64"
+          src={image}
+          width="64"
+        />
       </TableCell>
-      <TableCell className="hidden md:table-cell">
-        {creationDate?.toString()}
-      </TableCell>
-      <TableCell className="text-right">
-        {totalPrice && `${totalPrice}€`}
+      <TableCell className="font-medium">{name}</TableCell>
+      <TableCell>{description}</TableCell>
+      <TableCell></TableCell>
+      <TableCell></TableCell>
+      <TableCell>{totalPrice}€</TableCell>
+      <TableCell>
+        <Button aria-haspopup="true" size="icon" variant="ghost">
+          <Link href={stripeLink ? `${stripeLink}` : ""}>
+            <ShoppingCart className="h-4 w-4" />
+          </Link>
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button aria-haspopup="true" size="icon" variant="ghost">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   );
