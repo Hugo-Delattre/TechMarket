@@ -1,5 +1,5 @@
 import React from "react";
-import { ProductsDashboard } from "../../components/ProductsDashboard";
+import { ProductsDashboard } from "../../components/dashboards/ProductsDashboard";
 
 const page = () => {
   return (

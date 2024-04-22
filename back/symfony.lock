@@ -1,4 +1,30 @@
 {
+    "api-platform/core": {
+        "version": "3.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.2",
+            "ref": "696d44adc3c0d4f5d25a2f1c4f3700dd8a5c6db9"
+        },
+        "files": [
+            "config/packages/api_platform.yaml",
+            "config/routes/api_platform.yaml",
+            "src/ApiResource/.gitignore"
+        ]
+    },
+    "dama/doctrine-test-bundle": {
+        "version": "8.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "7.2",
+            "ref": "896306d79d4ee143af9eadf9b09fd34a8c391b70"
+        },
+        "files": [
+            "config/packages/dama_doctrine_test_bundle.yaml"
+        ]
+    },
     "doctrine/doctrine-bundle": {
         "version": "2.12",
         "recipe": {
@@ -13,6 +39,18 @@
             "src/Repository/.gitignore"
         ]
     },
+    "doctrine/doctrine-fixtures-bundle": {
+        "version": "3.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "1f5514cfa15b947298df4d771e694e578d4c204d"
+        },
+        "files": [
+            "src/DataFixtures/AppFixtures.php"
+        ]
+    },
     "doctrine/doctrine-migrations-bundle": {
         "version": "3.3",
         "recipe": {
@@ -24,6 +62,30 @@
         "files": [
             "config/packages/doctrine_migrations.yaml",
             "migrations/.gitignore"
+        ]
+    },
+    "lexik/jwt-authentication-bundle": {
+        "version": "2.20",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.5",
+            "ref": "e9481b233a11ef7e15fe055a2b21fd3ac1aa2bb7"
+        },
+        "files": [
+            "config/packages/lexik_jwt_authentication.yaml"
+        ]
+    },
+    "nelmio/cors-bundle": {
+        "version": "2.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.5",
+            "ref": "6bea22e6c564fba3a1391615cada1437d0bde39c"
+        },
+        "files": [
+            "config/packages/nelmio_cors.yaml"
         ]
     },
     "phpunit/phpunit": {
@@ -120,6 +182,19 @@
             "config/routes.yaml"
         ]
     },
+    "symfony/security-bundle": {
+        "version": "6.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.4",
+            "ref": "2ae08430db28c8eb4476605894296c82a642028f"
+        },
+        "files": [
+            "config/packages/security.yaml",
+            "config/routes/security.yaml"
+        ]
+    },
     "symfony/twig-bundle": {
         "version": "6.4",
         "recipe": {
@@ -143,6 +218,19 @@
         },
         "files": [
             "config/packages/validator.yaml"
+        ]
+    },
+    "symfony/web-profiler-bundle": {
+        "version": "6.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.1",
+            "ref": "e42b3f0177df239add25373083a564e5ead4e13a"
+        },
+        "files": [
+            "config/packages/web_profiler.yaml",
+            "config/routes/web_profiler.yaml"
         ]
     }
 }
