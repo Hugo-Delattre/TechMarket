@@ -32,8 +32,6 @@ class Order
      * @var Collection<int, Product>
      */
     #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'orders')]
-    #[Groups(['api'])]
-    #[SerializedPath('')]
     private Collection $products;
 
     public function __construct()

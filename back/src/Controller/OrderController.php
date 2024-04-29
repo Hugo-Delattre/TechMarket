@@ -15,13 +15,19 @@ use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuild
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Entity\Product;
 use App\Serializer\MyCustomOrderNormalizer;
+
 #[Route('/api/orders')]
 class OrderController extends AbstractController
 {
 
+
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
-    public function index(OrderRepository $orderRepository, SerializerInterface $serializer): JsonResponse
+    public function index(OrderRepository $orderRepository, SerializerInterface $serializer): Response
     {
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('api')
             ->toArray();
@@ -29,39 +35,37 @@ class OrderController extends AbstractController
     }
 
     #[Route('/', name: 'app_order_new', methods: ['POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager,SerializerInterface $serializer): JsonResponse
+    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
         $order = new Order();
         $content = json_decode($request->getContent(), true);
         $products = array();
         foreach ($content["productsId"] as $value) {
             $product = $entityManager->getRepository(Product::class)->findOneById($value["id"]);
-            array_push($products,$product);
-            
+            array_push($products, $product);
         }
-        foreach($products as $product){
+        foreach ($products as $product) {
             $order->addProduct($product);
             $product->addOrder($order);
-            $order->setTotalPrice($order->getTotalPrice()+$product->getPrice());
+            $order->setTotalPrice($order->getTotalPrice() + $product->getPrice());
         }
-        
+
         $order->setCreationDate(new \DateTime());
         $entityManager->persist($order);
         $entityManager->flush();
         $context = (new ObjectNormalizerContextBuilder())
-                ->withGroups('api')
-                ->toArray();
+            ->withGroups('api')
+            ->toArray();
         return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
     }
-    
+
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
-    public function show(Order $order,SerializerInterface $serializer): Response
+    public function show(Order $order, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('api')
             ->toArray();
         return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
-    
     }
 
     #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]

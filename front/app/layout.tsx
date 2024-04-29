@@ -13,6 +13,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { Cart } from "@/components/Cart";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,7 +36,7 @@ export default function RootLayout({
           <Navbar />
           {children}
         </body>
-        <ReactQueryDevtools />
+        {/* <ReactQueryDevtools /> */}
       </QueryClientProvider>
     </html>
   );

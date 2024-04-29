@@ -27,7 +27,7 @@ class ProductController extends AbstractController
         return JsonResponse::fromJsonString($serializer->serialize($productRepository->findAll(), 'json', $context));
     }
     #[Route('/', name: 'app_product_new', methods: ['POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer,ValidatorInterface $validator): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
         $product = new Product();
         $content = json_decode($request->getContent(), true);
@@ -58,12 +58,15 @@ class ProductController extends AbstractController
             ->withGroups('api')
             ->toArray();
         return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_product_edit', methods: ['PUT'])]
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager,SerializerInterface $serializer,  ValidatorInterface $validator): Response
+    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager, SerializerInterface $serializer,  ValidatorInterface $validator): Response
     {
-        $product = new Product();
         $content = json_decode($request->getContent(), true);
         $product->setName($content["name"]);
         $product->setDescription($content["description"]);
@@ -84,12 +87,16 @@ class ProductController extends AbstractController
         }
         //TODO: better error message
         return $this->json('"Error": "bad Input for new product"');
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['DELETE'])]
-    public function delete(Request $request,int $id, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    public function delete(Request $request, int $id, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
-    if ($product = $entityManager->getRepository(Product::class)->find($id))  {
+        if ($product = $entityManager->getRepository(Product::class)->find($id)) {
             $entityManager->remove($product);
             $entityManager->flush();
             return new Response(json_encode(['message' => 'Product deleted']), Response::HTTP_OK);
