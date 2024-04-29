@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -66,15 +68,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
 import { OrderTableRow } from "@/components/OrderTableRow";
+import { useQuery } from "@tanstack/react-query";
+import { getOrders } from "@/utils/axiosOrdersUtils";
+import { OrderProps } from "@/types/orderType";
 
-export function OrdersDashboard() {
+export const OrdersDashboard = () => {
+  const {
+    data: orders,
+    isSuccess,
+    isLoading,
+    error,
+  } = useQuery<OrderProps[]>({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      const response = await getOrders();
+      return response.data;
+    },
+  });
+  console.log("orders", orders);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
@@ -137,108 +150,45 @@ export function OrdersDashboard() {
                 <Card x-chunk="dashboard-05-chunk-3">
                   <CardHeader className="px-7">
                     <CardTitle>Orders</CardTitle>
-                    <CardDescription>
-                      Recent orders from your store.
-                    </CardDescription>
+                    <CardDescription>Recent orders.</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Customer</TableHead>
-                          <TableHead className="hidden sm:table-cell">
+                          <TableHead className="hidden md:table-cell">
                             ID
                           </TableHead>
-                          <TableHead className="hidden sm:table-cell">
-                            Products
-                          </TableHead>
+                          <TableHead>Products</TableHead>
                           <TableHead className="hidden md:table-cell">
-                            Order Date
+                            Order date
                           </TableHead>
-                          <TableHead className="text-right">Amount</TableHead>
+                          <TableHead>Total price</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {/* <TableRow className="bg-accent">
-                          <TableCell>
-                            <div className="font-medium">Liam Johnson</div>
-                            <div className="hidden text-sm text-muted-foreground md:inline">
-                              liam@example.com
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            Sale
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            <Badge className="text-xs" variant="secondary">
-                              Fulfilled
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            2023-06-23
-                          </TableCell>
-                          <TableCell className="text-right">$250.00</TableCell>
-                        </TableRow> */}
-                        <OrderTableRow
-                          name={"Thomas"}
-                          id={"1200"}
-                          totalPrice={60}
-                        />
-                        <OrderTableRow
-                          name={"Aaaaaah"}
-                          id={"1150"}
-                          totalPrice={80}
-                        />
-
-                        {/* <TableRow>
-                          <TableCell>
-                            <div className="font-medium">Olivia Smith</div>
-                            <div className="hidden text-sm text-muted-foreground md:inline">
-                              olivia@example.com
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            Refund
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            <Badge className="text-xs" variant="outline">
-                              Declined
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            2023-06-24
-                          </TableCell>
-                          <TableCell className="text-right">$150.00</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <div className="font-medium">Emma Brown</div>
-                            <div className="hidden text-sm text-muted-foreground md:inline">
-                              emma@example.com
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            Sale
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            <Badge className="text-xs" variant="secondary">
-                              Fulfilled
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            2023-06-26
-                          </TableCell>
-                          <TableCell className="text-right">$450.00</TableCell>
-                        </TableRow> */}
+                        {orders?.map((order) => (
+                          <OrderTableRow
+                            key={order.id}
+                            id={order.id}
+                            totalPrice={order.totalPrice}
+                            creationDate={order.creationDate}
+                            products={order.products}
+                          />
+                        ))}
+                        {/* <OrderTableRow id={order} />
+                        <OrderTableRow />
+                        <OrderTableRow /> */}
                       </TableBody>
                     </Table>
                   </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>
+            
           </div>
         </main>
       </div>
     </div>
   );
-}
+};

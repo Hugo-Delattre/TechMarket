@@ -1,9 +1,11 @@
+import { OrderProps } from "@/types/orderType";
+import { axiosInstance } from "@/utils/axiosInstance";
 import axios from "axios";
 
 export const getOrders = async () => {
   try {
     console.log("fetch started");
-    const response = await axios.get("https://pokeapi.co/api/v2/pokemon/ditto");
+    const response = await axiosInstance.get<OrderProps[]>("/orders");
     console.log("response", response.data);
     return response;
   } catch (error) {
@@ -15,7 +17,9 @@ export const getOrders = async () => {
 export const getOrder = async (id: string) => {
   try {
     console.log("fetch started");
-    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    const response = await axiosInstance.get(
+      `https://pokeapi.co/api/v2/pokemon/${id}`
+    );
     console.log("response", response.data);
     return response;
   } catch (error) {
@@ -27,7 +31,7 @@ export const getOrder = async (id: string) => {
 export const createOrder = async (Order: any) => {
   try {
     console.log("fetch started");
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       "https://pokeapi.co/api/v2/pokemon",
       Order
     );
@@ -42,7 +46,7 @@ export const createOrder = async (Order: any) => {
 export const updateOrder = async (id: string, Order: any) => {
   try {
     console.log("fetch started");
-    const response = await axios.put(
+    const response = await axiosInstance.put(
       `https://pokeapi.co/api/v2/pokemon/${id}`,
       Order
     );
@@ -56,10 +60,11 @@ export const updateOrder = async (id: string, Order: any) => {
 
 export const deleteOrder = async (id: string) => {
   try {
-    console.log("fetch started");
-    const response = await axios.delete(
-      `https://pokeapi.co/api/v2/pokemon/${id}`
-    );
+    console.log("delete started");
+    console.log("id", id);
+    console.log(`${axiosInstance.defaults.baseURL}/orders/${id}`);
+
+    const response = await axiosInstance.delete(`/orders/${id}`);
     console.log("response", response.data);
     return response;
   } catch (error) {
