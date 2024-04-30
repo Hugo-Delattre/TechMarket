@@ -66,6 +66,7 @@ import { ProductTableRow } from "@/components/ProductTableRow";
 import { BreadcrumbNav } from "@/components/Breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "@/utils/axiosProductsUtils";
+import { ProductProps } from "@/types/productType";
 
 export function ProductsDashboard() {
   const {
@@ -73,11 +74,15 @@ export function ProductsDashboard() {
     isPending,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<ProductProps[]>({
     queryKey: ["products"],
-    queryFn: getProducts,
+    queryFn: async () => {
+      const response = await getProducts();
+      return response.data;
+    },
   });
   console.log(productsData);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
@@ -168,6 +173,16 @@ export function ProductsDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
+                      {productsData?.map((product) => (
+                        <ProductTableRow
+                          key={product.id}
+                          id={product.id}
+                          photo={product.photo}
+                          name={product.name}
+                          description={product.description}
+                          price={product.price}
+                        />
+                      )) || []}
                       <ProductTableRow
                         id="2435"
                         name="Intel Core i9"
@@ -187,7 +202,8 @@ export function ProductsDashboard() {
                 </CardContent>
                 <CardFooter>
                   <div className="text-xs text-muted-foreground">
-                    Showing <strong>X-10</strong> of <strong>X</strong> products
+                    Showing <strong>{productsData?.length}</strong> of{" "}
+                    <strong>{productsData?.length}</strong> products
                   </div>
                 </CardFooter>
               </Card>

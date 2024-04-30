@@ -13,26 +13,15 @@ import {
 import { MoreHorizontal, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { addToCart } from "@/utils/cardUtils";
-export type ProductTableRowProps = {
-  id: string;
-  image: string;
-  name: string;
-  description: string;
-  price: number;
-};
+import { ProductProps } from "@/types/productType";
 
 export const ProductTableRow = ({
   id,
-  image,
+  photo,
   name,
   description,
   price,
-}: ProductTableRowProps) => {
-<<<<<<< HEAD
-=======
-  console.log("Hello Table Row");
-
->>>>>>> origin/dev
+}: ProductProps) => {
   return (
     <TableRow className="w-full">
       <TableCell className="hidden sm:table-cell">
@@ -40,7 +29,7 @@ export const ProductTableRow = ({
           alt={`${name} image`}
           className="aspect-square rounded-md object-cover"
           height="64"
-          src={image}
+          src={photo}
           width="64"
         />
       </TableCell>
@@ -50,34 +39,30 @@ export const ProductTableRow = ({
       <TableCell></TableCell>
       <TableCell>{price}€</TableCell>
       <TableCell>
-<<<<<<< HEAD
-  <Button aria-haspopup="true" size="icon" variant="ghost">
-=======
         <Button
-      aria-haspopup="true"
-      size="icon"
-      variant="ghost"
-      onClick={() => {
-        addToCart({ id, image, name, description, price });
-      }}
-    >
->>>>>>> origin/dev
-      <ShoppingCart className="h-4 w-4" />
-    </Button>
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button aria-haspopup="true" size="icon" variant="ghost">
-          <MoreHorizontal className="h-4 w-4" />
-          <span className="sr-only">Toggle menu</span>
+          aria-haspopup="true"
+          size="icon"
+          variant="ghost"
+          onClick={() => {
+            addToCart({ id, photo, name, description, price });
+          }}
+        >
+          <ShoppingCart className="h-4 w-4" />
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Delete</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  </TableCell>
-    </TableRow >
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button aria-haspopup="true" size="icon" variant="ghost">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TableCell>
+    </TableRow>
   );
 };

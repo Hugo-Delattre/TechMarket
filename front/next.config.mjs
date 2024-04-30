@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['static1.purepeople.com', 'www.nvidia.com', 'encrypted-tbn0.gstatic.com'],
+    domains: ['www.nvidia.com', 'encrypted-tbn0.gstatic.com', 'picsum.photos', 'example.com', 'picsum.photos'],
   },
   async headers() {
         return [

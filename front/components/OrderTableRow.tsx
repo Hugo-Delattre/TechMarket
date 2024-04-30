@@ -79,7 +79,7 @@ export const OrderTableRow = ({
         </TooltipProvider>
       </div>
       <TableCell className="hidden md:table-cell">
-        {format(creationDate, "yyyy-MM-dd")}
+        {format(creationDate.date, "yyyy-MM-dd")}
       </TableCell>
       <TableCell>{totalPrice}€</TableCell>
       <TableCell>
