@@ -183,20 +183,6 @@ export function ProductsDashboard() {
                           price={product.price}
                         />
                       )) || []}
-                      <ProductTableRow
-                        id="2435"
-                        name="Intel Core i9"
-                        description="La puissance à l'état brut."
-                        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6HyUQbJ-t_4bLCKssd4wcgyeVT11SRkl8D5YDMlOX8Q&s"
-                        price={600}
-                      />
-                      <ProductTableRow
-                        id="2436"
-                        name="RTX 4090"
-                        description="La plus performante des cartes graphiques NVIDIA RTX de 4ème génération."
-                        image="https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/ada/rtx-4090/geforce-ada-4090-web-og-1200x630.jpg"
-                        price={900}
-                      />
                     </TableBody>
                   </Table>
                 </CardContent>

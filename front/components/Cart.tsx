@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,31 +12,50 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { ProductProps } from "@/types/productType";
+import React, { useEffect, useState } from "react";
 
-export type CartProps = {};
+export const Cart = () => {
+  const [cart, setCart] = useState([]);
 
-export const Cart = (props: CartProps) => {
+  useEffect(() => {
+    const storedCart = localStorage.getItem("CartProducts");
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+  }, []);
+  console.log("cart", cart);
+
   return (
-    <Card className="">
+    <Card className="flex flex-col items-end">
       <CardHeader>
         <CardTitle>Your cart</CardTitle>
         <CardDescription>{"Order when you're ready."}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="space-y-1">
-          <Label htmlFor="name">Product 1</Label>
-        </div>
-        <Separator />
-        <div className="space-y-1">
-          <Label htmlFor="username">Product 2</Label>
-        </div>
-        <Separator />
-        <div className="space-y-1">
-          <Label htmlFor="username">Product 3</Label>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button>Order</Button>
+      {cart.length > 0 && (
+        <CardContent className="space-y-2 flex flex-col">
+          {cart.length > 0 &&
+            cart.map((product: ProductProps) => (
+              <React.Fragment key={product.id}>
+                <div className="space-y-1 flex justify-between items-center">
+                  {/* <Label htmlFor="name">{product.name}</Label> */}
+                  <img width={80} height={80} src={product.photo} />
+                  <p className="text-sm text-right">{product.price}€</p>
+                </div>
+                <Separator />
+              </React.Fragment>
+            ))}
+        </CardContent>
+      )}
+      <CardFooter className="w-full flex flex-col">
+        <p className="font-semibold text-center pb-1">
+          {cart.length > 0 &&
+            cart
+              .reduce((total, product) => total + product.price, 0)
+              .toFixed(2)}
+          {cart.length > 0 && "€"}
+        </p>
+        <Button className="w-full">Order</Button>
       </CardFooter>
     </Card>
   );
