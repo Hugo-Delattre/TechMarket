@@ -59,10 +59,6 @@ class ProductController extends AbstractController
             ->withGroups('api')
             ->toArray();
         return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
-        $context = (new ObjectNormalizerContextBuilder())
-            ->withGroups('api')
-            ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_product_edit', methods: ['PUT'])]
