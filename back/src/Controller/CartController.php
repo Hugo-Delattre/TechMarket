@@ -25,15 +25,49 @@ use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuild
 #[Route('api')]
 class CartController extends AbstractController
 {
-    #[Route('/carts/{productId}', name: 'app_cart', methods: ['GET', 'DELETE'])]
+    #[Route('/carts/{productId}', name: 'app_cart', methods: ['POST', 'DELETE'])]
     #[OA\Response(
         response: 200,
         description: 'returned if product is available too add in cart'
     )]
-    public function index(int $id, ProductRepository $productRepository): JsonResponse
+    public function index(EntityManagerInterface $entityManager, int $productId, ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
-        //TODO: check if product exist
-        return $this->json($productRepository->findOneById($id));
+        $product = $productRepository->findOneById($productId);
+        $currentOrder = null;
+        if ($product) {
+            //TODO: set current user
+            $currentUser = $entityManager->find(User::class, 2);
+            //case of first order (0 order paid or not)
+            if ($currentUser->getOrders()->count() < 1) {
+                $currentOrder = new Order();
+                $currentOrder->setCustomer($currentUser);
+                $currentOrder->setTotalPrice(0);
+            }
+            //Customer already have an order in db 
+            else {
+                foreach ($currentUser->getOrders() as $order) {
+                    if ($order->isOrdered() == false) {
+                        $currentOrder = $order;
+                        break;
+                    } else {
+                        $currentOrder = new Order();
+                        $currentOrder->setCustomer($currentUser);
+                        $currentOrder->setTotalPrice(0);
+                    }
+                }
+            }
+
+            $currentOrder->addProduct($product);
+            $currentOrder->setTotalPrice($currentOrder->getTotalPrice() + $product->getPrice());
+            $currentOrder->setCreationDate(new \DateTime());
+            $entityManager->persist($currentOrder);
+            $entityManager->flush();
+            $context = (new ObjectNormalizerContextBuilder())
+                ->withGroups('api')
+                ->toArray();
+            return JsonResponse::fromJsonString($serializer->serialize($currentOrder, 'json', $context));
+        };
+        return $this->json(['error' => 'Product not found'], Response::HTTP_BAD_REQUEST);
     }
 
     #[Route('/carts/validate', name: 'app_order_new', methods: ['POST'])]
@@ -46,7 +80,7 @@ class CartController extends AbstractController
         content: new OA\JsonContent(
             type: Object::class,
             example: [
-                "productsId" => [["id" => "7"], ["id" => "8"], ["id" => "9"]]
+                "productsId" => [["id" => "7", "quantity" => 2], ["id" => "8", "quantity" => 2], ["id" => "9", "quantity" => 1]]
             ]
         )
     )]
@@ -56,10 +90,9 @@ class CartController extends AbstractController
         $content = json_decode($request->getContent(), true);
         foreach ($content["productsId"] as $value) {
             $product = $entityManager->getRepository(Product::class)->findOneById($value["id"]);
-            $order->addProduct($product);
-        }
-        foreach ($order->getProducts() as $product) {
-            $order->setTotalPrice($order->getTotalPrice() + $product->getPrice());
+            for ($i = 0; $i < $value["quantity"]; $i++) {
+                $order->addProduct($product);
+            }
         }
 
         $order->setCreationDate(new \DateTime());

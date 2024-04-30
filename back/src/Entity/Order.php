@@ -38,6 +38,9 @@ class Order
     #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'orders')]
     private Collection $products;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $ordered = null;
+
 
     public function __construct()
     {
@@ -102,6 +105,18 @@ class Order
     public function setCustomer(?User $customer): static
     {
         $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function isOrdered(): ?bool
+    {
+        return $this->ordered;
+    }
+
+    public function setOrdered(?bool $ordered): static
+    {
+        $this->ordered = $ordered;
 
         return $this;
     }
