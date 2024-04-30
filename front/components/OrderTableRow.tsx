@@ -65,7 +65,7 @@ export const OrderTableRow = ({
                     key={product.id}
                     width="50"
                     height="50"
-                    src={products[0]?.photo && products[0].photo}
+                    src={product?.photo && product.photo}
                     alt="id"
                     className="rounded-lg"
                   />

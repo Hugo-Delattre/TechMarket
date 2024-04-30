@@ -1,6 +1,13 @@
 import { ProductProps } from "@/types/productType";
+import { axiosInstance } from "@/utils/axiosInstance";
 
-export const addToCart = ({ id, photo, name, description, price }: ProductProps) => {
+export const addToCartLocalStorage = ({
+  id,
+  photo,
+  name,
+  description,
+  price,
+}: ProductProps) => {
   let cart = localStorage.getItem("CartProducts");
   cart = cart ? JSON.parse(cart) : null;
   if (Array.isArray(cart)) {
@@ -9,4 +16,13 @@ export const addToCart = ({ id, photo, name, description, price }: ProductProps)
     cart = [{ id, photo, name, description, price }];
   }
   localStorage.setItem("CartProducts", JSON.stringify(cart));
+};
+
+export const addToCartAxios = async ({ id }) => {
+  try {
+    const { data } = await axiosInstance.post(`/carts/${id}`, id);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
 };
