@@ -7,5 +7,5 @@ http:
     no_tls: true # Use HTTP instead of HTTPS
     daemon: false # Run the server in the background
     use_gzip: true # Toggle GZIP compression
-workers:
-  docker_compose: ~
+# workers:
+#   docker_compose: ~

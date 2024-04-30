@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Order;
+use App\Entity\User;
 use App\Form\OrderType;
 use App\Repository\OrderRepository;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,16 +27,13 @@ class OrderController extends AbstractController
         response: 200,
         description: 'retrieve all orders'
     )]
-    public function index(OrderRepository $orderRepository, SerializerInterface $serializer): Response
+    public function index(EntityManagerInterface $entityManager, OrderRepository $orderRepository, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('api')
             ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
-        $context = (new ObjectNormalizerContextBuilder())
-            ->withGroups('api')
-            ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
+        //TODO: change for the current user
+        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAllByUserId(1), 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
@@ -55,6 +54,6 @@ class OrderController extends AbstractController
             $entityManager->flush();
             return new JsonResponse(['message' => 'Order deleted']);
         }
-        return new JsonResponse(["message" => "Eror while deleting"], 40);
+        return new JsonResponse(["message" => "Eror while deleting"], 400);
     }
 }

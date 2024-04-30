@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\User;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,11 +19,13 @@ use phpDocumentor\Reflection\Types\Integer;
 use App\Entity\Order;
 use App\Utils\SchemeInsertOrder;
 use OpenApi\Attributes\Schema;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 
 #[Route('api')]
 class CartController extends AbstractController
 {
-    #[Route('/carts/{productId}', name: 'app_cart', methods: ['POST', 'DELETE'])]
+    #[Route('/carts/{productId}', name: 'app_cart', methods: ['GET', 'DELETE'])]
     #[OA\Response(
         response: 200,
         description: 'returned if product is available too add in cart'
@@ -51,18 +54,16 @@ class CartController extends AbstractController
     {
         $order = new Order();
         $content = json_decode($request->getContent(), true);
-        $products = array();
         foreach ($content["productsId"] as $value) {
             $product = $entityManager->getRepository(Product::class)->findOneById($value["id"]);
-            array_push($products, $product);
-        }
-        foreach ($products as $product) {
             $order->addProduct($product);
-            $product->addOrder($order);
+        }
+        foreach ($order->getProducts() as $product) {
             $order->setTotalPrice($order->getTotalPrice() + $product->getPrice());
         }
 
         $order->setCreationDate(new \DateTime());
+        $order->setCustomer($entityManager->find(User::class, 1));
         $entityManager->persist($order);
         $entityManager->flush();
         $context = (new ObjectNormalizerContextBuilder())

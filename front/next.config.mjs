@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    domains: ['www.nvidia.com', 'encrypted-tbn0.gstatic.com', 'picsum.photos', 'example.com', 'picsum.photos'],
-  },
-  async headers() {
+    images: {
+        domains: ['www.nvidia.com', 'encrypted-tbn0.gstatic.com', 'picsum.photos', 'example.com', 'picsum.photos', 'media.ldlc.com'],
+    },
+    async headers() {
         return [
             {
                 // matching all API routes
