@@ -1,9 +1,10 @@
 import axios from "axios";
+import { axiosInstance } from "@/utils/axiosInstance";
 
 export const getUsers = async () => {
   try {
     console.log("fetch started");
-    const response = await axios.get("https://pokeapi.co/api/v2/pokemon/ditto");
+    const response = await axiosInstance.get("https://pokeapi.co/api/v2/pokemon/ditto");
     console.log("response", response.data);
     return response;
   } catch (error) {
