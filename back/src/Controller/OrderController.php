@@ -13,8 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Entity\Product;
-use App\Serializer\MyCustomOrderNormalizer;
+use OpenApi\Attributes as OA;
 
 #[Route('/api/orders')]
 class OrderController extends AbstractController
@@ -22,6 +21,10 @@ class OrderController extends AbstractController
 
 
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'retrieve all orders'
+    )]
     public function index(OrderRepository $orderRepository, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
@@ -34,31 +37,6 @@ class OrderController extends AbstractController
         return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
     }
 
-    #[Route('/', name: 'app_order_new', methods: ['POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
-    {
-        $order = new Order();
-        $content = json_decode($request->getContent(), true);
-        $products = array();
-        foreach ($content["productsId"] as $value) {
-            $product = $entityManager->getRepository(Product::class)->findOneById($value["id"]);
-            array_push($products, $product);
-        }
-        foreach ($products as $product) {
-            $order->addProduct($product);
-            $product->addOrder($order);
-            $order->setTotalPrice($order->getTotalPrice() + $product->getPrice());
-        }
-
-        $order->setCreationDate(new \DateTime());
-        $entityManager->persist($order);
-        $entityManager->flush();
-        $context = (new ObjectNormalizerContextBuilder())
-            ->withGroups('api')
-            ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
-    }
-
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
     public function show(Order $order, SerializerInterface $serializer): Response
     {
@@ -68,32 +46,15 @@ class OrderController extends AbstractController
         return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
     }
 
-    #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Order $order, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}', name: 'app_order_delete', methods: ['DELETE'])]
+    public function delete(Request $request, int $id, EntityManagerInterface $entityManager): JsonResponse
     {
-        $form = $this->createForm(OrderType::class, $order);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('order/edit.html.twig', [
-            'order' => $order,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
-    public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->getPayload()->get('_token'))) {
+        $order = $entityManager->find(Order::class, $id);
+        if ($order) {
             $entityManager->remove($order);
             $entityManager->flush();
+            return new JsonResponse(['message' => 'Order deleted']);
         }
-
-        return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse(["message" => "Eror while deleting"], 40);
     }
 }

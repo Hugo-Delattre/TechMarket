@@ -26,6 +26,7 @@ class ProductController extends AbstractController
             ->toArray();
         return JsonResponse::fromJsonString($serializer->serialize($productRepository->findAll(), 'json', $context));
     }
+
     #[Route('/', name: 'app_product_new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
