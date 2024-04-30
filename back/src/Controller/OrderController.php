@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Order;
+use App\Entity\User;
 use App\Form\OrderType;
 use App\Repository\OrderRepository;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,75 +15,45 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use OpenApi\Attributes as OA;
 
 #[Route('/api/orders')]
 class OrderController extends AbstractController
 {
 
+
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
-    public function index(OrderRepository $orderRepository, SerializerInterface $serializer): JsonResponse
+    #[OA\Response(
+        response: 200,
+        description: 'retrieve all orders'
+    )]
+    public function index(EntityManagerInterface $entityManager, OrderRepository $orderRepository, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('api')
             ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAll(), 'json', $context));
-    }
-
-    #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $order = new Order();
-        $form = $this->createForm(OrderType::class, $order);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($order);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('order/new.html.twig', [
-            'order' => $order,
-            'form' => $form,
-        ]);
+        //TODO: change for the current user
+        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAllByUserId(2), 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
-    public function show(Order $order): Response
+    public function show(Order $order, SerializerInterface $serializer): Response
     {
-        return $this->render('order/show.html.twig', [
-            'order' => $order,
-        ]);
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
     }
 
-    #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Order $order, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}', name: 'app_order_delete', methods: ['DELETE'])]
+    public function delete(Request $request, int $id, EntityManagerInterface $entityManager): JsonResponse
     {
-        $form = $this->createForm(OrderType::class, $order);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('order/edit.html.twig', [
-            'order' => $order,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
-    public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->getPayload()->get('_token'))) {
+        $order = $entityManager->find(Order::class, $id);
+        if ($order) {
             $entityManager->remove($order);
             $entityManager->flush();
+            return new JsonResponse(['message' => 'Order deleted']);
         }
-
-        return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse(["message" => "Eror while deleting"], 400);
     }
 }

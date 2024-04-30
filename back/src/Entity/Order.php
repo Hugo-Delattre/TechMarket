@@ -9,7 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
 class Order
@@ -28,13 +27,20 @@ class Order
     #[Groups(['api'])]
     private ?\DateTimeInterface $creationDate = null;
 
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['api'])]
+    private ?User $customer = null;
+
     /**
      * @var Collection<int, Product>
      */
     #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'orders')]
-    #[Groups(['api'])]
-    #[SerializedPath('[]')]
     private Collection $products;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $ordered = null;
+
 
     public function __construct()
     {
@@ -80,16 +86,37 @@ class Order
 
     public function addProduct(Product $product): static
     {
-        if (!$this->products->contains($product)) {
-            $this->products->add($product);
-        }
-
+        $this->products->add($product);
         return $this;
     }
 
     public function removeProduct(Product $product): static
     {
         $this->products->removeElement($product);
+
+        return $this;
+    }
+
+    public function getCustomer(): ?user
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?User $customer): static
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function isOrdered(): ?bool
+    {
+        return $this->ordered;
+    }
+
+    public function setOrdered(?bool $ordered): static
+    {
+        $this->ordered = $ordered;
 
         return $this;
     }

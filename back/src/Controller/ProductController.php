@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('api/products')]
 class ProductController extends AbstractController
@@ -27,18 +28,18 @@ class ProductController extends AbstractController
     }
 
     #[Route('/', name: 'app_product_new', methods: ['POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
         $product = new Product();
-        $content = $request->getContent();
+        $content = json_decode($request->getContent(), true);
         $product->setName($content["name"]);
         $product->setDescription($content["description"]);
         $product->setPhoto($content["photo"]);
-        $product->setName($content["price"]);
+        $product->setPrice($content["price"]);
         $errors = $validator->validate($product);
         if (count($errors) > 0) {
             $error_message = new Response((string) $errors, 400);
-            return $this->json($error_message);
+            return new JsonResponse($error_message);
         } else {
 
             $entityManager->persist($product);
@@ -48,8 +49,7 @@ class ProductController extends AbstractController
                 ->toArray();
             return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
         }
-        //TODO: better error message
-        return $this->json('"Error": "bad Input for new product"');
+        return new JsonResponse('"Error": "bad Input for new product"');
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
@@ -62,14 +62,13 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product_edit', methods: ['PUT'])]
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager, SerializerInterface $serializer,  ValidatorInterface $validator): Response
     {
-        $product = new Product();
-        $content = $request->getContent();
+        $content = json_decode($request->getContent(), true);
         $product->setName($content["name"]);
         $product->setDescription($content["description"]);
         $product->setPhoto($content["photo"]);
-        $product->setName($content["price"]);
+        $product->setPrice($content["price"]);
         $errors = $validator->validate($product);
         if (count($errors) > 0) {
             $error_message = new Response((string) $errors, 400);
@@ -85,16 +84,20 @@ class ProductController extends AbstractController
         }
         //TODO: better error message
         return $this->json('"Error": "bad Input for new product"');
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($product, 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['DELETE'])]
-    public function delete(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    public function delete(Request $request, int $id, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $request->getContent()["id"], $request->getPayload()->get('_token'))) {
+        if ($product = $entityManager->getRepository(Product::class)->find($id)) {
             $entityManager->remove($product);
             $entityManager->flush();
-            return Response::HTTP_SUCCESS;
+            return new Response(json_encode(['message' => 'Product deleted']), Response::HTTP_OK);
         }
-        return Response::HTTP_BAD_REQUEST;
+        return new Response(json_encode(['message' => 'error']), Response::HTTP_BAD_REQUEST);
     }
 }
