@@ -43,7 +43,7 @@ export function ProfileDashboard() {
             </div>
             <div className="space-y-1">
               <Label htmlFor="last-name">Last name</Label>
-              <Input id="last-name" defaultValue="Harrit" />
+              <Input id="last-name" defaultValue="Harit" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="profile-picture">Profile picture</Label>

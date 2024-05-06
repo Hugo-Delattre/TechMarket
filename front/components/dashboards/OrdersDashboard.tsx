@@ -72,6 +72,7 @@ import { OrderTableRow } from "@/components/OrderTableRow";
 import { useQuery } from "@tanstack/react-query";
 import { getOrders } from "@/utils/axiosOrdersUtils";
 import { OrderProps } from "@/types/orderType";
+import { isLogged } from "@/utils/account.service";
 
 export const OrdersDashboard = () => {
   const {
@@ -117,31 +118,33 @@ export const OrdersDashboard = () => {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="relative ml-auto flex-1 md:grow-0"></div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
-                <Image
-                  src="/profile.png"
-                  width={36}
-                  height={36}
-                  alt="Avatar"
+          {isLogged() && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
                   className="overflow-hidden rounded-full"
-                />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                >
+                  <Image
+                    src="/profile.png"
+                    width={36}
+                    height={36}
+                    alt="Avatar"
+                    className="overflow-hidden rounded-full"
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -185,7 +188,6 @@ export const OrdersDashboard = () => {
                 </Card>
               </TabsContent>
             </Tabs>
-            
           </div>
         </main>
       </div>

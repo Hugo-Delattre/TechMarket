@@ -21,7 +21,6 @@ import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const pathname = usePathname();
-  // console.log("pathname", pathname);
 
   return (
     <div>

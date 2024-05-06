@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import {
   Card,
@@ -27,6 +26,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/utils/axiosLoginUtils";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -43,14 +44,17 @@ export function LoginForm() {
     },
   });
 
-  
+  const { toast } = useToast();
+  const router = useRouter();
+
   const { mutate } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      console.log("data", data);
+      localStorage.setItem("jwt", data.data.token);
+      router.push("/products");
       toast({
-        title: "You are logged in",
-        description: "You are now logged in",
+        title: "Welcome back!",
+        description: "You are now logged in.",
       });
     },
     onError: (error) => {
@@ -60,20 +64,10 @@ export function LoginForm() {
         description: "An error occured",
       });
     },
-  })
-  
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("data", data);
-    mutate(data);
+  });
 
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    mutate(data);
   }
 
   return (

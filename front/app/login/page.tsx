@@ -1,11 +1,11 @@
 "use client";
 
 import { ProfileDashboard } from "@/components/dashboards/ProfileDashboard";
-import React, { useState } from "react";
+import React from "react";
 import { LoginForm } from "@/components/forms/LoginForm";
+import { isLogged } from "@/utils/account.service";
 
 const LoginPage = () => {
-  const [isLoggedIn, setisLoggedIn] = useState(false);
   return (
     <div
       style={{
@@ -15,8 +15,7 @@ const LoginPage = () => {
         height: "100vh",
       }}
     >
-      {/* {isLoggedIn ? <ProfileDashboard /> : <LoginForm />} */}
-      {isLoggedIn ? <ProfileDashboard /> : <LoginForm />}
+      {isLogged() ? <ProfileDashboard /> : <LoginForm />}
     </div>
   );
 };

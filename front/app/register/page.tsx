@@ -1,11 +1,13 @@
-// import { RegisterForm } from "@/components/forms/OldRegisterForm";
+"use client";
+
+import { ProfileDashboard } from "@/components/dashboards/ProfileDashboard";
 import { RegisterForm } from "@/components/forms/RegisterForm";
-import React from "react";
+import { isLogged } from "@/utils/account.service";
 
 const page = () => {
   return (
     <div className="flex justify-center h-screen items-center">
-      <RegisterForm />
+      {isLogged() ? <ProfileDashboard /> : <RegisterForm />}
     </div>
   );
 };

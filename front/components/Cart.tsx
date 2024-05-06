@@ -47,9 +47,9 @@ export const Cart = () => {
     filters: { mutationKey: ["addToCart"], status: "pending" },
     select: (mutation) => mutation.state.variables,
   });
-  
+
   return (
-    <Card className="flex flex-col items-end">
+    <Card className="flex flex-col items-center">
       <CardHeader>
         <CardTitle>Your cart</CardTitle>
         <CardDescription>{"Order when you're ready."}</CardDescription>
