@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { MoreHorizontal, ShoppingCart } from "lucide-react";
 import { ProductProps } from "@/types/productType";
-import { deleteOrder, getOrders } from "@/utils/axiosOrdersUtils";
+import { deleteOrder } from "@/utils/axiosOrdersUtils";
 import { OrderProps } from "@/types/orderType";
 import {
   Dialog,

@@ -4,8 +4,27 @@ import axios from "axios";
 
 export const getOrders = async () => {
   try {
-    const response = await axiosInstance.get<OrderProps[]>("/orders");
+    // console.log("getOrders fetch started");
+
+    // const jwt = localStorage.getItem("jwt");
+    // const response = await axiosInstance.get("/orders", {
+    //   headers: {
+    //     Authorization: `Bearer ${jwt}`,
+    //   },
+    // });
+    // console.log("response", response.data);
+
+    const jwt = localStorage.getItem("jwt");
+    const response = await axiosInstance.request({
+      method: "get",
+      url: "/orders",
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
     return response;
+
+    // return response;
   } catch (error) {
     console.error("Error fetching Orders:", error);
     throw error;
@@ -24,29 +43,9 @@ export const getOrder = async (id: string) => {
   }
 };
 
-export const deleteProductFromCart = async (id: string) => {
-  
-};
-
-export const createOrder = async (Order: any) => {
-  try {
-    const response = await axiosInstance.post(
-      "https://pokeapi.co/api/v2/pokemon",
-      Order
-    );
-    return response;
-  } catch (error) {
-    console.error("Error creating Order:", error);
-    throw error;
-  }
-};
-
 export const updateOrder = async (id: string, Order: OrderProps) => {
   try {
-    const response = await axiosInstance.put(
-      `orders/${id}`,
-      Order
-    );
+    const response = await axiosInstance.put(`orders/${id}`, Order);
     return response;
   } catch (error) {
     console.error("Error updating Order:", error);

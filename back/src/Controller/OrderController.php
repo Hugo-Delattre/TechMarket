@@ -33,7 +33,7 @@ class OrderController extends AbstractController
             ->withGroups('api')
             ->toArray();
         //TODO: change for the current user
-        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAllByUserId(2), 'json', $context));
+        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAllByUserId(3), 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]

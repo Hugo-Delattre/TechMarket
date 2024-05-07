@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import { addToCartAxios, addToCartLocalStorage } from "@/utils/cardUtils";
+import { addToCartAxios } from "@/utils/cardUtils";
 import { ProductProps } from "@/types/productType";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -26,7 +26,7 @@ export const ProductTableRow = ({
   const queryClient = useQueryClient();
   const { mutate, isPending, variables } = useMutation({
     //TODO implement optimistic update
-    mutationFn: (id: string) => addToCartAxios({ id }),
+    mutationFn: (id: string) => addToCartAxios(id),
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["orders"],
@@ -58,7 +58,6 @@ export const ProductTableRow = ({
           variant="ghost"
           onClick={() => {
             mutate(id);
-            // addToCartLocalStorage({ id, photo, name, description, price });
           }}
         >
           <ShoppingCart className="h-4 w-4" />
