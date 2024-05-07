@@ -1,15 +1,16 @@
 "use client";
 
 import { ProfileDashboard } from "@/components/dashboards/ProfileDashboard";
-import React, { useEffect } from "react";
 import { LoginForm } from "@/components/forms/LoginForm";
 import { isLogged } from "@/utils/account.service";
 import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
-const LoginPage = () => {
+const ProfilePage = () => {
   const router = useRouter();
+
   useEffect(() => {
-    isLogged() && router.push("/profile");
+    !isLogged() && router.push("/login");
   }, []);
 
   return (
@@ -21,9 +22,9 @@ const LoginPage = () => {
         height: "100vh",
       }}
     >
-      <LoginForm />
+      {isLogged() && <ProfileDashboard />}
     </div>
   );
 };
 
-export default LoginPage;
+export default ProfilePage;

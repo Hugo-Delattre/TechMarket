@@ -67,7 +67,8 @@ import { BreadcrumbNav } from "@/components/Breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "@/utils/axiosProductsUtils";
 import { ProductProps } from "@/types/productType";
-import { isAdmin, isLogged } from "@/utils/account.service";
+import { isAdmin, isLogged, logout } from "@/utils/account.service";
+import { useRouter } from "next/navigation";
 
 export function ProductsDashboard() {
   const {
@@ -82,7 +83,7 @@ export function ProductsDashboard() {
       return response.data;
     },
   });
-  console.log(productsData);
+  const router = useRouter();
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -129,7 +130,14 @@ export function ProductsDashboard() {
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    logout();
+                    router.push("/login");
+                  }}
+                >
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}

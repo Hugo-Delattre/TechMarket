@@ -5,8 +5,11 @@ export const saveToken = (token: string) => {
 };
 
 export const isLogged = () => {
-  let token = localStorage?.getItem("jwt");
-  return !!token;
+  if (typeof window !== "undefined") {
+    let token = localStorage.getItem("jwt");
+    return !!token;
+  }
+  return false;
 };
 
 export const isAdmin = () => {
@@ -19,10 +22,13 @@ export const getToken = () => {
 };
 
 export const getHeaders = () => {
-  const jwt = getToken();
-  return {
-    Authorization: `Bearer ${jwt}`,
+  const jwt = localStorage.getItem("jwt");
+  const headers = {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
   };
+  return headers;
 };
 
 export const getUserRole = () => {

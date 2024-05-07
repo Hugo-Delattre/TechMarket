@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,8 +12,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserType } from "@/types/userType";
+import { getLoggedUserData } from "@/utils/axiosUsersUtils";
+import { useQuery } from "@tanstack/react-query";
 
 export function ProfileDashboard() {
+  const {
+    data: userData,
+    isSuccess,
+    isLoading,
+    error,
+  } = useQuery<UserType>({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const response = await getLoggedUserData();
+      console.log("userData", response.data);
+      return response.data;
+    },
+  });
+
   return (
     <Tabs defaultValue="account" className="w-[400px]">
       <TabsList className="grid w-full grid-cols-2">
@@ -50,6 +69,7 @@ export function ProfileDashboard() {
               <Input id="profile-picture" defaultValue="http://" />
             </div>
           </CardContent>
+
           <CardFooter>
             <Button>Save changes</Button>
           </CardFooter>

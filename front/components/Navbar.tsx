@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
+import { isLogged } from "@/utils/account.service";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -85,18 +86,22 @@ const Navbar = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/login"
+                  href={isLogged() ? "/profile" : "/login"}
                   className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname.includes("/login")
+                    pathname.includes("/login") || pathname.includes("/profile")
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground"
                   } transition-colors hover:text-foreground md:h-8 md:w-8`}
                 >
                   <Users2 className="h-5 w-5" />
-                  <span className="sr-only">Customers</span>
+                  <span className="sr-only">
+                    {isLogged() ? "Profile" : "Login"}
+                  </span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Customers</TooltipContent>
+              <TooltipContent side="right">
+                {isLogged() ? "Profile" : "Login"}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </nav>

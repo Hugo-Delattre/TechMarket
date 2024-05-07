@@ -53,7 +53,6 @@ export function RegisterForm() {
   const { mutate } = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      console.log("SUCCESS : User registered, toast should appear", data);
       router.push("/products");
       toast({
         title: "Welcome!",
@@ -70,17 +69,7 @@ export function RegisterForm() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("data", data);
     mutate(data);
-
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // });
   }
 
   return (
@@ -181,7 +170,6 @@ export function RegisterForm() {
             <Button
               type="submit"
               className="w-full"
-              onClick={() => console.log("hello")}
             >
               Create an account
             </Button>

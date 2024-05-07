@@ -118,11 +118,7 @@ export function LoginForm() {
                 )}
               />
             </div>
-            <Button
-              type="submit"
-              className="w-full"
-              onClick={() => console.log("hello")}
-            >
+            <Button type="submit" className="w-full">
               Submit
             </Button>
           </form>

@@ -27,7 +27,6 @@ export const Cart = () => {
       setCart(JSON.parse(storedCart));
     }
   }, []);
-  console.log("cart", cart);
 
   const {
     data: ordersData,
@@ -41,7 +40,6 @@ export const Cart = () => {
       return response.data;
     },
   });
-  console.log("ordersData", ordersData);
 
   const variables = useMutationState<string>({
     filters: { mutationKey: ["addToCart"], status: "pending" },

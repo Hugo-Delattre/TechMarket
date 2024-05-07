@@ -109,7 +109,6 @@ export const OrderTableRow = ({
                       <Button
                         className="bg-red-900"
                         onClick={() => {
-                          console.log("clicked");
                           mutate(id);
                         }}
                       >

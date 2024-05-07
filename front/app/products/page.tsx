@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { ProductsDashboard } from "../../components/dashboards/ProductsDashboard";
 import { Cart } from "@/components/Cart";

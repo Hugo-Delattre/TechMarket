@@ -87,7 +87,6 @@ export const OrdersDashboard = () => {
       return response.data;
     },
   });
-  console.log("orders", orders);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">

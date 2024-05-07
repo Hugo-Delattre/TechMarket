@@ -22,7 +22,6 @@ const loginSchema = z.object({
 type LoginFields = z.infer<typeof loginSchema>;
 
 const onSubmit: SubmitHandler<FieldValues> = (data) => {
-  console.log(data);
 };
 
 export function LoginForm<LoginFields>() {
