@@ -41,9 +41,11 @@ class ProductController extends AbstractController
             $error_message = new Response((string) $errors, 400);
             return new JsonResponse($error_message);
         } else {
-
+            $stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET']);
             $entityManager->persist($product);
             $entityManager->flush();
+            $stripe->products->create(['name' => $product->getName(), 'description' => $product->getDescription(), 'default_price_data' => ['currency' => 'EUR', 'unit_amount' => $product->getPrice() * 100], 'id' => strval($product->getId())]);
+
             $context = (new ObjectNormalizerContextBuilder())
                 ->withGroups('api')
                 ->toArray();
@@ -75,8 +77,13 @@ class ProductController extends AbstractController
             return $this->json($error_message);
         } else {
 
+            $stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET']);
             $entityManager->persist($product);
             $entityManager->flush();
+            $stripe->products->update(
+                'prod_NWjs8kKbJWmuuc',
+                (['name' => $product->getName(), 'description' => $product->getDescription(), 'default_price' => $product->getPrice(), 'id' => $product->getId()])
+            );
             $context = (new ObjectNormalizerContextBuilder())
                 ->withGroups('api')
                 ->toArray();

@@ -17,6 +17,7 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
 use phpDocumentor\Reflection\Types\Integer;
 use App\Entity\Order;
+use App\Repository\OrderRepository;
 use App\Utils\SchemeInsertOrder;
 use OpenApi\Attributes\Schema;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -25,7 +26,7 @@ use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuild
 #[Route('api')]
 class CartController extends AbstractController
 {
-    #[Route('/carts/{productId}', name: 'app_cart', methods: ['POST', 'DELETE'])]
+    #[Route('/carts/{productId}', name: 'app_cart', methods: ['POST'])]
     #[OA\Response(
         response: 200,
         description: 'returned if product is available too add in cart'
@@ -35,9 +36,7 @@ class CartController extends AbstractController
         $product = $productRepository->findOneById($productId);
         $currentOrder = null;
         if ($product) {
-            //TODO: set current user
-            $currentUser = $entityManager->find(User::class, 2);
-            //case of first order (0 order paid or not)
+            $currentUser = $this->getUser();
             if ($currentUser->getOrders()->count() < 1) {
                 $currentOrder = new Order();
                 $currentOrder->setCustomer($currentUser);
@@ -70,38 +69,85 @@ class CartController extends AbstractController
         return $this->json(['error' => 'Product not found'], Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/carts/validate', name: 'app_order_new', methods: ['POST'])]
+    #[Route('/carts/{productId}', name: 'app_cart_remove', methods: ['DELETE'])]
     #[OA\Response(
         response: 200,
-        description: 'post new order',
+        description: 'returned if product is available too remove from cart'
+    )]
+    public function remove(EntityManagerInterface $entityManager, int $productId, ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
+    {
+        $product = $productRepository->findOneById($productId);
+        $currentOrder = null;
+        if ($product) {
+            //TODO: set current user
+            $currentUser = $this->getUser();
+            if ($currentUser->getOrders()->count() < 1) {
+                return $this->json(['error' => '0 order found'], Response::HTTP_BAD_REQUEST);
+            }
+            //Customer already have an order in db 
+            else {
+                foreach ($currentUser->getOrders() as $order) {
+                    if ($order->isOrdered() == false) {
+                        $currentOrder = $order;
+                        break;
+                    }
+                }
+            }
+            if ($currentOrder == null) {
+                return $this->json(['error' => 'No order found'], Response::HTTP_BAD_REQUEST);
+            }
+            if ($currentOrder->getProducts()->contains($product) == false) {
+                return $this->json(['error' => 'Product not found in cart'], Response::HTTP_BAD_REQUEST);
+            } else {
+                $currentOrder->removeProduct($product);
+                $currentOrder->setTotalPrice($currentOrder->getTotalPrice() - $product->getPrice());
+                $currentOrder->setCreationDate(new \DateTime());
+                $entityManager->persist($currentOrder);
+                $entityManager->flush();
+            }
+            $context = (new ObjectNormalizerContextBuilder())
+                ->withGroups('api')
+                ->toArray();
+            return JsonResponse::fromJsonString($serializer->serialize($currentOrder, 'json', $context));
+        };
+        return $this->json(['error' => 'Product not found'], Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route('/cart/validate', name: 'app_order_new', methods: ['POST'])]
+    #[OA\Response(
+        response: 200,
+        description: 'validate the cart and return the payment url',
     )]
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
             type: Object::class,
             example: [
-                "productsId" => [["id" => "7", "quantity" => 2], ["id" => "8", "quantity" => 2], ["id" => "9", "quantity" => 1]]
+                "orderId" =>  "7",
+                "success_url" => "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             ]
         )
     )]
-    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
+    public function new(Request $request, EntityManagerInterface $entityManager, OrderRepository $orderSymfony): JsonResponse
     {
-        $order = new Order();
-        $content = json_decode($request->getContent(), true);
-        foreach ($content["productsId"] as $value) {
-            $product = $entityManager->getRepository(Product::class)->findOneById($value["id"]);
-            for ($i = 0; $i < $value["quantity"]; $i++) {
-                $order->addProduct($product);
-            }
+        $stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET']);
+        $data = json_decode($request->getContent(), true);
+        $order = $orderSymfony->findById($data['orderId']);
+        $line_items = [];
+        foreach ($order->getProducts() as $product) {
+            $orderLine = [];
+            $stripeProduct = $stripe->products->retrieve($product->getId(), []);
+            $stripePrice = $stripe->prices->retrieve($stripeProduct['default_price'], []);
+            $orderLine['price'] = $stripePrice['id'];
+            $orderLine['quantity'] = 1;
+            array_push($line_items, $orderLine);
         }
+        $paymentData = $stripe->checkout->sessions->create([
+            'line_items' => [$line_items],
+            'mode' => 'payment',
+            'success_url' => $data['success_url'],
+        ]);
 
-        $order->setCreationDate(new \DateTime());
-        $order->setCustomer($entityManager->find(User::class, 1));
-        $entityManager->persist($order);
-        $entityManager->flush();
-        $context = (new ObjectNormalizerContextBuilder())
-            ->withGroups('api')
-            ->toArray();
-        return JsonResponse::fromJsonString($serializer->serialize($order, 'json', $context));
+        return new JsonResponse(["payment_url" => $paymentData['url']]);
     }
 }
