@@ -61,7 +61,6 @@ export const ProductTableRow = ({
           variant="ghost"
           onClick={() => {
             mutate(id);
-            // addToCartLocalStorage({ id, photo, name, description, price });
           }}
         >
           <ShoppingCart className="h-4 w-4" />
