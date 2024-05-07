@@ -30,10 +30,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  password: z.string().min(2),
+  name: z.string(),
+  description: z.string(),
+  price: z.number(),
 });
 
 export function LoginForm() {

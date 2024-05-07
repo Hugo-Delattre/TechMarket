@@ -13,10 +13,8 @@ export const getProducts = async () => {
 
 export const getProduct = async (id: string) => {
   try {
-    const response = await axiosInstance.get(
-      `https://pokeapi.co/api/v2/pokemon/${id}`
-    );
-    return response;
+    const { data } = await axiosInstance.get(`products/${id}`);
+    return data;
   } catch (error) {
     console.error("Error fetching product:", error);
     throw error;

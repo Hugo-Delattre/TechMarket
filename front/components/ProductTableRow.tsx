@@ -15,6 +15,7 @@ import Image from "next/image";
 import { addToCartAxios } from "@/utils/cardUtils";
 import { ProductProps } from "@/types/productType";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 export const ProductTableRow = ({
   id,
@@ -46,7 +47,9 @@ export const ProductTableRow = ({
           width="64"
         />
       </TableCell>
-      <TableCell className="font-medium">{name}</TableCell>
+      <TableCell className="font-medium">
+        <Link href={`/products/${id}`}>{name}</Link>
+      </TableCell>
       <TableCell>{description}</TableCell>
       <TableCell></TableCell>
       <TableCell></TableCell>
@@ -58,6 +61,7 @@ export const ProductTableRow = ({
           variant="ghost"
           onClick={() => {
             mutate(id);
+            // addToCartLocalStorage({ id, photo, name, description, price });
           }}
         >
           <ShoppingCart className="h-4 w-4" />
