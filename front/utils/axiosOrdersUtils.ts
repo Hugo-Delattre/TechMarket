@@ -24,6 +24,10 @@ export const getOrder = async (id: string) => {
   }
 };
 
+export const deleteProductFromCart = async (id: string) => {
+  
+};
+
 export const createOrder = async (Order: any) => {
   try {
     const response = await axiosInstance.post(
@@ -37,10 +41,10 @@ export const createOrder = async (Order: any) => {
   }
 };
 
-export const updateOrder = async (id: string, Order: any) => {
+export const updateOrder = async (id: string, Order: OrderProps) => {
   try {
     const response = await axiosInstance.put(
-      `https://pokeapi.co/api/v2/pokemon/${id}`,
+      `orders/${id}`,
       Order
     );
     return response;

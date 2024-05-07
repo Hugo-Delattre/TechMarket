@@ -14,9 +14,16 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { OrderProps } from "@/types/orderType";
 import { ProductProps } from "@/types/productType";
-import { getOrders } from "@/utils/axiosOrdersUtils";
-import { useMutationState, useQuery } from "@tanstack/react-query";
+import { getOrders, updateOrder } from "@/utils/axiosOrdersUtils";
+import {
+  useMutation,
+  useMutationState,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { removeFromCart } from "@/utils/cardUtils";
 
 export const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -41,9 +48,17 @@ export const Cart = () => {
     },
   });
 
-  const variables = useMutationState<string>({
-    filters: { mutationKey: ["addToCart"], status: "pending" },
-    select: (mutation) => mutation.state.variables,
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    //TODO implement optimistic update
+    mutationFn: (id: number) => removeFromCart(id),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["orders"],
+      });
+    },
+    mutationKey: ["removeFromCart"],
+    onError: (err) => alert(err.message),
   });
 
   return (
@@ -74,6 +89,14 @@ export const Cart = () => {
               <div className="space-y-1 flex justify-between items-center">
                 <img width={80} height={80} src={product.photo} />
                 <p className="text-sm text-right">{product.price}€</p>
+                <X
+                  opacity={0.4}
+                  onClick={() => {
+                    mutate(product.id);
+                    console.log("deleting");
+                  }}
+                  size={20}
+                />
               </div>
               <Separator />
             </React.Fragment>

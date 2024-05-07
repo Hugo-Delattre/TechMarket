@@ -18,7 +18,7 @@ export const addToCartLocalStorage = ({
   localStorage.setItem("CartProducts", JSON.stringify(cart));
 };
 
-export const addToCartAxios = async ({ id }) => {
+export const addToCartAxios = async (id: number) => {
   try {
     const { data } = await axiosInstance.post(`/carts/${id}`, id);
     return data;
@@ -26,3 +26,12 @@ export const addToCartAxios = async ({ id }) => {
     console.error(error);
   }
 };
+
+export const removeFromCart = async (id: number) => {
+  try {
+    const { data } = await axiosInstance.delete(`/carts/${id}`);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
