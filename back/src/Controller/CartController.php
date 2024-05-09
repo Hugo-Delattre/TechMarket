@@ -146,8 +146,20 @@ class CartController extends AbstractController
             'line_items' => [$line_items],
             'mode' => 'payment',
             'success_url' => $data['success_url'],
+            'cancel_url' => 'http://localhost:8000/api/cart/notPaid/' . $order->getId(),
         ]);
-
+        $order->setOrdered(true);
         return new JsonResponse(["payment_url" => $paymentData['url']]);
+    }
+
+    #[Route('/cart/notPaid/{orderId}', name: 'app_order_canceled', methods: ['GET'])]
+    public function cancel(Int $orderId, Request $request, EntityManagerInterface $entityManager, OrderRepository $orderSymfony): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $order = $orderSymfony->findById($orderId);
+        $order->setOrdered(false);
+        $entityManager->persist($order);
+        $entityManager->flush();
+        return $this->redirect('http://localhost:3000/products?error=payment_not_validated');
     }
 }
