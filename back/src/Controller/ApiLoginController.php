@@ -16,12 +16,26 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
-
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle;
 
 #[Route('/api')]
 class ApiLoginController extends AbstractController
 {
-
+    #[Route('/login', name: 'api_login', methods: ['POST'])]
+    public function index(#[CurrentUser] ?User $user, Security $security, SerializerInterface $serializer): Response
+    {
+        if (null === $user) {
+            return $this->json([
+                'message' => 'missing credentials',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+        $security->login($user);
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($user, 'json', $context));
+    }
     #[Route('/register', name: 'register', methods: ['POST'])]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): JsonResponse
     {

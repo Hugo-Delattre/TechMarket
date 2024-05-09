@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
 
 /**
  * @extends ServiceEntityRepository<Order>
@@ -35,5 +36,13 @@ class OrderRepository extends ServiceEntityRepository
         $query = $this->getEntityManager()->createQuery('SELECT o FROM App\Entity\Order o WHERE o.customer = :id');
         $query->setParameter('id', $userId);
         return $query->getResult();
+    }
+    public function findAllOrdersByUser(User $user): ?array
+    {
+        return $this->createQueryBuilder('o')
+            ->andWhere('o.customer = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
     }
 }

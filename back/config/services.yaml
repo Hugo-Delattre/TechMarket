@@ -17,6 +17,9 @@ services:
         class: App\Serializer\MyCustomProductNormalizer
         tags:
             - { name: serializer.normalizer }
+    app.custom_authenticator:
+        class: App\Security\CustomAuthenticator
+        parent: lexik_jwt_authentication.security.jwt_authenticator
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

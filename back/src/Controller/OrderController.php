@@ -16,24 +16,36 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use OpenApi\Attributes as OA;
+use App\Repository\UserRepository;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use PHPUnit\Util\Json;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+
+use Symfony\Component\Security\Core\Security;
 
 #[Route('/api/orders')]
 class OrderController extends AbstractController
 {
-
 
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
     #[OA\Response(
         response: 200,
         description: 'retrieve all orders'
     )]
-    public function index(EntityManagerInterface $entityManager, OrderRepository $orderRepository, SerializerInterface $serializer): Response
+    public function index(UserRepository $userRepository, Request $request, EntityManagerInterface $entityManager, OrderRepository $orderRepository, SerializerInterface $serializer): Response
     {
         $context = (new ObjectNormalizerContextBuilder())
             ->withGroups('api')
             ->toArray();
         //TODO: change for the current user
-        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAllByUserId(3), 'json', $context));
+        $token = $request->headers->get('Authorization');
+        $tokenParts = explode(".", $token);
+        $tokenHeader = base64_decode($tokenParts[0]);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtHeader = json_decode($tokenHeader);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = $userRepository->findOneBy(['login' => $jwtPayload->login]);
+        return JsonResponse::fromJsonString($serializer->serialize($orderRepository->findAllByUserId($user->getId()), 'json', $context));
     }
 
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
