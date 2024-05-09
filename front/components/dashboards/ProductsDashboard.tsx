@@ -69,6 +69,7 @@ import { getProducts } from "@/utils/axiosProductsUtils";
 import { ProductProps } from "@/types/productType";
 import { isAdmin, isLogged, logout } from "@/utils/account.service";
 import { useRouter } from "next/navigation";
+import { AvatarDropdown } from "@/components/AvatarDropdown";
 
 export function ProductsDashboard() {
   const {
@@ -108,38 +109,7 @@ export function ProductsDashboard() {
             />
           </div>
           {isLogged() && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="overflow-hidden rounded-full"
-                >
-                  <Image
-                    src="/profile.png"
-                    width={36}
-                    height={36}
-                    alt="Avatar"
-                    className="overflow-hidden rounded-full"
-                  />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => {
-                    logout();
-                    router.push("/login");
-                  }}
-                >
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <AvatarDropdown />
           )}
         </header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

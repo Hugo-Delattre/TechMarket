@@ -37,7 +37,7 @@ export const createProduct = async (product: any) => {
 export const updateProduct = async (id: string, product: any) => {
   try {
     const response = await axiosInstance.put(
-      `https://pokeapi.co/api/v2/pokemon/${id}`,
+      `/products/${id}`,
       product
     );
     return response;

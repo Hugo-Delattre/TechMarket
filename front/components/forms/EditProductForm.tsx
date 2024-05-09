@@ -28,31 +28,38 @@ import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/utils/axiosLoginUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { updateProduct } from "@/utils/axiosProductsUtils";
 
-const FormSchema = z.object({
-  login: z.string(),
-  password: z.string(),
+const EditProductFormSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  photo: z.string(),
+  price: z.number(),
 });
 
-export function LoginForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      login: "",
-    },
+export type EditProductFormFields = z.infer<typeof EditProductFormSchema>;
+
+export function EditProductForm({
+  id,
+  name,
+  description,
+  photo,
+  price,
+}: EditProductFormFields) {
+  const form = useForm<z.infer<typeof EditProductFormSchema>>({
+    resolver: zodResolver(EditProductFormSchema),
   });
 
   const { toast } = useToast();
   const router = useRouter();
 
   const { mutate } = useMutation({
-    mutationFn: loginUser,
+    mutationFn: updateProduct,
     onSuccess: (data) => {
-      localStorage.setItem("jwt", data.data.token);
       router.push("/products");
       toast({
-        title: "Welcome back!",
-        description: "You are now logged in.",
+        title: "Le produit a bien été modifié !",
       });
     },
     onError: (error) => {
@@ -64,18 +71,13 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    mutate(data);
+  function onSubmit(data: z.infer<typeof EditProductFormSchema>) {
+    // mutate(data.data);
+    console.log("coucou");
   }
 
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-      </CardHeader>
+    <Card className="w-full">
       <CardContent>
         <Form {...form}>
           <form
@@ -83,15 +85,16 @@ export function LoginForm() {
             className="w-full space-y-6"
           >
             <div className="grid gap-4">
-              <div className="grid gap-2">
+              <div className="grid gap-2 mt-4">
                 <FormField
                   control={form.control}
-                  name="login"
+                  name="name"
+                  defaultValue={name}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Toto33" {...field} />
+                        <Input placeholder={name} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -100,15 +103,44 @@ export function LoginForm() {
               </div>
               <FormField
                 control={form.control}
-                name="password"
+                name="description"
+                defaultValue={description}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Input placeholder={description} {...field} type="text" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="photo"
+                defaultValue={photo}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Photo</FormLabel>
+                    <FormControl>
+                      <Input placeholder={photo} {...field} type="text" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="price"
+                defaultValue={Number(price)}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="********"
+                        placeholder={price.toString()}
                         {...field}
-                        type="password"
+                        type="number"
                       />
                     </FormControl>
                     <FormMessage />
@@ -121,12 +153,6 @@ export function LoginForm() {
             </Button>
           </form>
         </Form>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline">
-            Sign up
-          </Link>
-        </div>
       </CardContent>
     </Card>
   );

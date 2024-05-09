@@ -53,6 +53,8 @@ export function RegisterForm() {
   const { mutate } = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
+      console.log("data", data);
+      localStorage.setItem("jwt", data.data.token);
       router.push("/products");
       toast({
         title: "Welcome!",
@@ -167,10 +169,7 @@ export function RegisterForm() {
                 )}
               />
             </div>
-            <Button
-              type="submit"
-              className="w-full"
-            >
+            <Button type="submit" className="w-full">
               Create an account
             </Button>
           </form>
