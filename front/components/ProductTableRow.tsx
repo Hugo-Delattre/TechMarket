@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import { addToCartAxios } from "@/utils/cardUtils";
+import { addToCart } from "@/utils/axiosCartUtils";
 import { ProductProps } from "@/types/productType";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -27,7 +27,7 @@ export const ProductTableRow = ({
   const queryClient = useQueryClient();
   const { mutate, isPending, variables } = useMutation({
     //TODO implement optimistic update
-    mutationFn: (id: string) => addToCartAxios(id),
+    mutationFn: (id: string) => addToCart(id),
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["orders"],

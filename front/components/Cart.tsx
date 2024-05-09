@@ -9,11 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { OrderProps } from "@/types/orderType";
-import { ProductProps } from "@/types/productType";
 import { getOrders, updateOrder } from "@/utils/axiosOrdersUtils";
 import {
   useMutation,
@@ -23,10 +20,14 @@ import {
 } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { removeFromCart } from "@/utils/cardUtils";
+import { removeFromCart, validateCart } from "@/utils/axiosCartUtils";
+import { useRouter } from "next/navigation";
+import { toast, useToast } from "@/components/ui/use-toast";
 
 export const Cart = () => {
   const [cart, setCart] = useState([]);
+  const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     const storedCart = localStorage.getItem("CartProducts");
@@ -61,6 +62,21 @@ export const Cart = () => {
     onError: (err) => alert(err.message),
   });
 
+  const {
+    mutate: validationMutate,
+    isPending: isValidationPending,
+    isSuccess: isValidationSuccess,
+  } = useMutation({
+    mutationFn: (orderId: number) => validateCart(orderId),
+    onSuccess: (data) => {
+      if (data?.payment_url) {
+        const stripeUrl = data.payment_url;
+        router.push(stripeUrl);
+      }
+    },
+    onError: (err) => alert(err.message),
+  });
+
   return (
     <Card className="flex flex-col items-center">
       <CardHeader>
@@ -81,37 +97,47 @@ export const Cart = () => {
             ))}
         </CardContent>
       )} */}
-      {ordersData &&
-        ordersData[0]?.products.length > 0 &&
-        ordersData[0].products.map((product) => {
-          return (
-            <React.Fragment key={product.id}>
-              <div className="space-y-1 flex justify-between items-center">
-                <img width={80} height={80} src={product.photo} />
-                <p className="text-sm text-right">{product.price}€</p>
-                <X
-                  opacity={0.4}
-                  onClick={() => {
-                    mutate(product.id);
-                    console.log("deleting");
-                  }}
-                  size={20}
-                />
-              </div>
-              <Separator />
-            </React.Fragment>
-          );
-        })}
+      <CardContent className="space-y-2 flex flex-col">
+        {ordersData &&
+          ordersData[0]?.products.length > 0 &&
+          ordersData[0].products.map((product) => {
+            return (
+              <React.Fragment key={product.id}>
+                <div className="space-y-2 flex justify-between items-center">
+                  <img width={80} height={80} src={product.photo} />
+                  <p className="text-sm text-right">{product.price}€</p>
+                  <X
+                    opacity={0.4}
+                    onClick={() => {
+                      mutate(product.id);
+                    }}
+                    size={20}
+                    className="cursor-pointer hover:opacity-100 transition-opacity duration-200 rounded-sm p-[0.1rem] ml-1"
+                  />
+                </div>
+                <Separator />
+              </React.Fragment>
+            );
+          })}
+      </CardContent>
       <CardFooter className="w-full flex flex-col">
         <p className="font-semibold text-center pb-1">
-          {/* {cart.length > 0 &&
-            cart
-              .reduce((total, product) => total + product.price, 0)
-              .toFixed(2)}
-          {cart.length > 0 && "€"} */}
           {ordersData && ordersData[0] && ordersData[0].totalPrice + "€"}
         </p>
-        <Button className="w-full">Order</Button>
+        <Button
+          disabled={isValidationPending || isValidationSuccess}
+          className="w-full"
+          onClick={() => {
+            validationMutate(ordersData[0].id);
+            toast({
+              title: "Redirecting...",
+              description:
+                "You will be sent to Stripe secured payment page in a few seconds.",
+            });
+          }}
+        >
+          Order
+        </Button>
       </CardFooter>
     </Card>
   );

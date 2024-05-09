@@ -4,16 +4,6 @@ import axios from "axios";
 
 export const getOrders = async () => {
   try {
-    // console.log("getOrders fetch started");
-
-    // const jwt = localStorage.getItem("jwt");
-    // const response = await axiosInstance.get("/orders", {
-    //   headers: {
-    //     Authorization: `Bearer ${jwt}`,
-    //   },
-    // });
-    // console.log("response", response.data);
-
     const jwt = localStorage.getItem("jwt");
     const response = await axiosInstance.request({
       method: "get",
@@ -23,8 +13,6 @@ export const getOrders = async () => {
       },
     });
     return response;
-
-    // return response;
   } catch (error) {
     console.error("Error fetching Orders:", error);
     throw error;

@@ -1,8 +1,8 @@
 import { ProductProps } from "@/types/productType";
 
 export type OrderProps = {
-  id: string;
-  totalPrice: string;
-  creationDate: string;
+  id: number;
+  totalPrice: number;
+  creationDate: Date;
   products: ProductProps[];
 };
