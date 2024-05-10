@@ -24,6 +24,7 @@ import { getCart, removeFromCart, validateCart } from "@/utils/axiosCartUtils";
 import { useRouter } from "next/navigation";
 import { toast, useToast } from "@/components/ui/use-toast";
 import { CartProps } from "@/types/cartType";
+import { isLogged } from "@/utils/account.service";
 
 export const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -46,10 +47,9 @@ export const Cart = () => {
     queryKey: ["cart"],
     queryFn: async () => {
       const response = await getCart();
-      console.log("response", response);
-
       return response.data;
     },
+    enabled: isLogged(),
   });
 
   const queryClient = useQueryClient();
@@ -86,6 +86,7 @@ export const Cart = () => {
     <Card className="flex flex-col items-center">
       <CardHeader>
         <CardTitle>Your cart</CardTitle>
+
         <CardDescription>{"Order when you're ready."}</CardDescription>
       </CardHeader>
       {/* {cart.length > 0 && (
@@ -126,23 +127,31 @@ export const Cart = () => {
           })}
       </CardContent>
       <CardFooter className="w-full flex flex-col">
-        <p className="font-semibold text-center pb-1">
-          {cartData && cartData.totalPrice + "€"}
-        </p>
-        <Button
-          disabled={isValidationPending || isValidationSuccess}
-          className="w-full"
-          onClick={() => {
-            validationMutate(cartData?.id);
-            toast({
-              title: "Redirecting...",
-              description:
-                "You will be sent to Stripe secured payment page in a few seconds.",
-            });
-          }}
-        >
-          Order
-        </Button>
+        {cartData && cartData?.products.length > 0 && (
+          <>
+            <p className="font-semibold text-center pb-1">
+              {cartData && cartData.totalPrice + "€"}
+            </p>
+            <Button
+              disabled={isValidationPending || isValidationSuccess}
+              className="w-full"
+              onClick={() => {
+                if (!isLogged()) {
+                  router.push("/login");
+                } else {
+                  validationMutate(cartData?.id);
+                  toast({
+                    title: "Redirecting...",
+                    description:
+                      "You will be sent to Stripe secured payment page in a few seconds.",
+                  });
+                }
+              }}
+            >
+              Order
+            </Button>
+          </>
+        )}
       </CardFooter>
     </Card>
   );

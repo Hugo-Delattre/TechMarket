@@ -1,71 +1,51 @@
 "use client";
 
 import { z } from "zod";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "react-query";
-import { BreadcrumbNav } from "@/components/Breadcrumb";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs } from "@/components/ui/tabs";
 import { ProductProps } from "@/types/productType";
 import { isLogged, logout } from "@/utils/account.service";
-import { getProduct } from "@/utils/axiosProductsUtils";
-import { useQuery } from "@tanstack/react-query";
+import { deleteProduct, getProduct } from "@/utils/axiosProductsUtils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PanelLeft, PlusCircle, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { Form } from "@/components/ui/form";
 import { Cart } from "@/components/Cart";
 import { EditProductForm } from "@/components/forms/EditProductForm";
 import { AvatarDropdown } from "@/components/AvatarDropdown";
 import { ProductBreacrumb } from "@/components/breadcrumbs/ProductBreacrumb";
 
-const schema = z.object({
-  id: z.number(),
-  name: z.string(),
-  description: z.string(),
-  price: z.string(),
-  photo: z.string(),
-});
-
-type FormFields = z.infer<typeof schema>;
-
 const ProductPage = ({ params }: { params: { slug: string } }) => {
   const router = useRouter();
+  const [isEditing, setisEditing] = useState(false);
+
   const { data: productData, isLoading } = useQuery<ProductProps>({
     queryKey: ["product", params.slug],
     queryFn: () => getProduct(params.slug),
   });
-  const [isEditing, setisEditing] = useState(false);
+
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: (id: string) => deleteProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      router.push("/products");
+    },
+    onError: (err) => alert(err.message),
+  });
 
   return (
     <div className="flex overflow-y-scroll">
@@ -144,7 +124,13 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
                     >
                       {isEditing ? "Cancel editing" : "Edit"}
                     </Button>
-                    <Button className="mt-6" variant="outline">
+                    <Button
+                      className="mt-6"
+                      variant="outline"
+                      onClick={() => {
+                        mutate(params.slug);
+                      }}
+                    >
                       Delete
                     </Button>
                   </div>

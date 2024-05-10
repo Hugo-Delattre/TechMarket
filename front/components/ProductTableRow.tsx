@@ -1,21 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableRow, TableCell } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { addToCart } from "@/utils/axiosCartUtils";
 import { ProductProps } from "@/types/productType";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { isLogged } from "@/utils/account.service";
+import { useRouter } from "next/navigation";
 
 export const ProductTableRow = ({
   id,
@@ -24,6 +17,7 @@ export const ProductTableRow = ({
   description,
   price,
 }: ProductProps) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { mutate, isPending, variables } = useMutation({
     //TODO implement optimistic update
@@ -61,7 +55,7 @@ export const ProductTableRow = ({
           size="icon"
           variant="ghost"
           onClick={() => {
-            mutate(id);
+            isLogged() ? mutate(id) : router.push("/login");
           }}
         >
           <ShoppingCart className="h-4 w-4" />

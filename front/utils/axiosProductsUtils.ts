@@ -23,10 +23,12 @@ export const getProduct = async (id: string) => {
 
 export const createProduct = async (product: any) => {
   try {
-    const response = await axiosInstance.post(
-      "https://pokeapi.co/api/v2/pokemon",
-      product
-    );
+    const jwt = localStorage.getItem("jwt");
+    const response = await axiosInstance.post("/products", product, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
     return response;
   } catch (error) {
     console.error("Error creating product:", error);
@@ -36,10 +38,7 @@ export const createProduct = async (product: any) => {
 
 export const updateProduct = async (id: string, product: any) => {
   try {
-    const response = await axiosInstance.put(
-      `/products/${id}`,
-      product
-    );
+    const response = await axiosInstance.put(`/products/${id}`, product);
     return response;
   } catch (error) {
     console.error("Error updating product:", error);
@@ -49,9 +48,12 @@ export const updateProduct = async (id: string, product: any) => {
 
 export const deleteProduct = async (id: string) => {
   try {
-    const response = await axiosInstance.delete(
-      `https://pokeapi.co/api/v2/pokemon/${id}`
-    );
+    const jwt = localStorage.getItem("jwt");
+    const response = await axiosInstance.delete(`/products/${id}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
     return response;
   } catch (error) {
     console.error("Error deleting product:", error);

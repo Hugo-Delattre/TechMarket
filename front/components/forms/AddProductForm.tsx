@@ -28,46 +28,32 @@ import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/utils/axiosLoginUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { updateProduct } from "@/utils/axiosProductsUtils";
+import { createProduct } from "@/utils/axiosProductsUtils";
 
-const EditProductFormSchema = z.object({
-  id: z.number(),
+const AddProductFormSchema = z.object({
+  photo: z.string(),
   name: z.string(),
   description: z.string(),
-  photo: z.string(),
   price: z.string(),
 });
 
-interface EditProductFormProps {
-  id: number;
-  name: string;
-  description: string;
-  photo: string;
-  price: string;
-}
-
-export type EditProductFormFields = z.infer<typeof EditProductFormSchema>;
-
-export function EditProductForm({
-  id,
-  name,
-  description,
-  photo,
-  price,
-}: EditProductFormProps) {
-  const form = useForm<EditProductFormFields>({
-    resolver: zodResolver(EditProductFormSchema),
+export function AddProductForm() {
+  const form = useForm<z.infer<typeof AddProductFormSchema>>({
+    resolver: zodResolver(AddProductFormSchema),
+    defaultValues: {},
   });
 
   const { toast } = useToast();
   const router = useRouter();
 
   const { mutate } = useMutation({
-    mutationFn: updateProduct,
+    mutationFn: (product) => createProduct(product),
     onSuccess: (data) => {
-      router.push("/products");
+      console.log("product created data", data);
+
       toast({
-        title: "Le produit a bien été modifié !",
+        title: "Success!",
+        description: "Your product have been created successfully!",
       });
     },
     onError: (error) => {
@@ -79,31 +65,36 @@ export function EditProductForm({
     },
   });
 
-  function onSubmit(data: z.infer<typeof EditProductFormSchema>) {
-    // mutate(data.data);
-    console.log("coucou", data);
+  function onSubmit(data: z.infer<typeof AddProductFormSchema>) {
+    console.log("submit data", data);
+
+    mutate(data);
   }
 
   return (
-    <Card className="w-full">
+    <Card className="mx-auto w-full">
+      <CardHeader>
+        <CardTitle className="text-2xl">New product</CardTitle>
+        <CardDescription>
+          Enter your email below to login to your account
+        </CardDescription>
+      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            // onSubmit={console.log("coucou")}
             className="w-full space-y-6"
           >
             <div className="grid gap-4">
-              <div className="grid gap-2 mt-4">
+              <div className="grid gap-2">
                 <FormField
                   control={form.control}
                   name="name"
-                  defaultValue={name}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder={name} {...field} />
+                        <Input placeholder="Product name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -113,12 +104,15 @@ export function EditProductForm({
               <FormField
                 control={form.control}
                 name="description"
-                defaultValue={description}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input placeholder={description} {...field} type="text" />
+                      <Input
+                        placeholder="Description"
+                        {...field}
+                        type="password"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -127,41 +121,45 @@ export function EditProductForm({
               <FormField
                 control={form.control}
                 name="photo"
-                defaultValue={photo}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Photo</FormLabel>
                     <FormControl>
-                      <Input placeholder={photo} {...field} type="text" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* <FormField
-                control={form.control}
-                name="price"
-                defaultValue={Number(price)}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
                       <Input
-                        placeholder={price.toString()}
+                        placeholder="https://photo.jpg"
                         {...field}
-                        type="number"
+                        type="text"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                      <Input placeholder="15" {...field} type="text" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <Button type="submit" className="w-full">
               Submit
             </Button>
           </form>
         </Form>
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="underline">
+            Sign up
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

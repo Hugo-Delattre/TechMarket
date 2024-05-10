@@ -88,6 +88,7 @@ export const OrdersDashboard = () => {
       const response = await getOrders();
       return response.data;
     },
+    enabled: isLogged(),
   });
 
   return (
