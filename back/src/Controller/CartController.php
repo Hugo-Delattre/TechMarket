@@ -26,6 +26,35 @@ use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuild
 #[Route('api')]
 class CartController extends AbstractController
 {
+    #[Route('/carts', name: 'app_cart_index', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'retrieve the current cart'
+    )]
+    public function cart(EntityManagerInterface $entityManager, OrderRepository $orderRepository, SerializerInterface $serializer): JsonResponse
+    {
+        $currentUser = $this->getUser();
+        $currentOrder = null;
+        if ($currentUser->getOrders()->count() < 1) {
+            return $this->json(['error' => '0 order found'], Response::HTTP_BAD_REQUEST);
+        }
+        //Customer already have an order in db 
+        else {
+            foreach ($currentUser->getOrders() as $order) {
+                if ($order->isOrdered() == false) {
+                    $currentOrder = $order;
+                    break;
+                }
+            }
+        }
+        if ($currentOrder == null) {
+            return $this->json(['error' => 'No current cart'], Response::HTTP_BAD_REQUEST);
+        }
+        $context = (new ObjectNormalizerContextBuilder())
+            ->withGroups('api')
+            ->toArray();
+        return JsonResponse::fromJsonString($serializer->serialize($currentOrder, 'json', $context));
+    }
     #[Route('/carts/{productId}', name: 'app_cart', methods: ['POST'])]
     #[OA\Response(
         response: 200,
@@ -149,6 +178,8 @@ class CartController extends AbstractController
             'cancel_url' => 'http://localhost:8000/api/cart/notPaid/' . $order->getId(),
         ]);
         $order->setOrdered(true);
+        $entityManager->persist($order);
+        $entityManager->flush();
         return new JsonResponse(["payment_url" => $paymentData['url']]);
     }
 
