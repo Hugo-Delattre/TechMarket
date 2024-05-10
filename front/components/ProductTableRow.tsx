@@ -30,7 +30,7 @@ export const ProductTableRow = ({
     mutationFn: (id: string) => addToCart(id),
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ["orders"],
+        queryKey: ["cart"],
       });
     },
     mutationKey: ["addToCart"],

@@ -20,9 +20,10 @@ import {
 } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { removeFromCart, validateCart } from "@/utils/axiosCartUtils";
+import { getCart, removeFromCart, validateCart } from "@/utils/axiosCartUtils";
 import { useRouter } from "next/navigation";
 import { toast, useToast } from "@/components/ui/use-toast";
+import { CartProps } from "@/types/cartType";
 
 export const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -37,14 +38,16 @@ export const Cart = () => {
   }, []);
 
   const {
-    data: ordersData,
+    data: cartData,
     isPending,
     isError,
     error,
-  } = useQuery<OrderProps[]>({
-    queryKey: ["orders"],
+  } = useQuery<CartProps[]>({
+    queryKey: ["cart"],
     queryFn: async () => {
-      const response = await getOrders();
+      const response = await getCart();
+      console.log("response", response);
+
       return response.data;
     },
   });
@@ -54,8 +57,10 @@ export const Cart = () => {
     //TODO implement optimistic update
     mutationFn: (id: number) => removeFromCart(id),
     onSettled: () => {
+      console.log("invalidating cart query");
+
       queryClient.invalidateQueries({
-        queryKey: ["orders"],
+        queryKey: ["cart"],
       });
     },
     mutationKey: ["removeFromCart"],
@@ -98,9 +103,9 @@ export const Cart = () => {
         </CardContent>
       )} */}
       <CardContent className="space-y-2 flex flex-col">
-        {ordersData &&
-          ordersData[0]?.products.length > 0 &&
-          ordersData[0].products.map((product) => {
+        {cartData &&
+          cartData?.products.length > 0 &&
+          cartData.products.map((product) => {
             return (
               <React.Fragment key={product.id}>
                 <div className="space-y-2 flex justify-between items-center">
@@ -122,13 +127,13 @@ export const Cart = () => {
       </CardContent>
       <CardFooter className="w-full flex flex-col">
         <p className="font-semibold text-center pb-1">
-          {ordersData && ordersData[0] && ordersData[0].totalPrice + "€"}
+          {cartData && cartData.totalPrice + "€"}
         </p>
         <Button
           disabled={isValidationPending || isValidationSuccess}
           className="w-full"
           onClick={() => {
-            validationMutate(ordersData[0].id);
+            validationMutate(cartData?.id);
             toast({
               title: "Redirecting...",
               description:

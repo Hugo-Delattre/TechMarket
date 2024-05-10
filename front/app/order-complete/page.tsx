@@ -1,4 +1,18 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 const OrderComplete = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push("/orders");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [router]);
   return (
     <div className="relative h-screen flex items-center justify-center bg-gray-50">
       <div className="p-8 m-4 bg-white rounded-lg shadow-md">
