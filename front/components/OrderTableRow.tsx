@@ -57,34 +57,45 @@ export const OrderTableRow = ({
 
   return (
     <TableRow className="w-full">
-      <TableCell className="hidden md:table-cell">#{id}</TableCell>
+      <TableCell className="hidden md:table-cell">
+        <Link href={`/orders/${id}`}>#{id}</Link>
+      </TableCell>
+
       <div>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
               <TableCell className="font-medium flex gap-1">
-                {products.slice(0, 4).map((product) => (
-                  <img
-                    key={product.id}
-                    width="50"
-                    height="50"
-                    src={product?.photo && product.photo}
-                    alt="id"
-                    className="rounded-lg"
-                  />
-                ))}
+                <Link href={`/orders/${id}`} className="font-medium flex gap-1">
+                  {products.slice(0, 6).map((product) => (
+                    <img
+                      key={product.id}
+                      width="50"
+                      height="50"
+                      src={product?.photo && product.photo}
+                      alt="id"
+                      className="rounded-lg"
+                    />
+                  ))}
+                </Link>
               </TableCell>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{products.map((product) => product.name).join(", ")}</p>
+              <Link href={`/orders/${id}`}>
+                <p>{products.map((product) => product.name).join(", ")}</p>
+              </Link>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
       <TableCell className="hidden md:table-cell">
-        {format(creationDate.date, "yyyy-MM-dd")}
+        <Link href={`/orders/${id}`}>
+          {format(creationDate.date, "yyyy-MM-dd")}
+        </Link>
       </TableCell>
-      <TableCell>{totalPrice}€</TableCell>
+      <TableCell>
+        <Link href={`/orders/${id}`}>{totalPrice}€</Link>
+      </TableCell>
       <TableCell>
         <Dialog>
           <DropdownMenu>
@@ -95,8 +106,7 @@ export const OrderTableRow = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
+              {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
               <DropdownMenuItem>
                 <DialogTrigger onClick={(e) => e.stopPropagation()}>
                   Delete

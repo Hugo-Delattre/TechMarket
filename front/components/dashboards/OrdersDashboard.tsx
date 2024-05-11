@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -72,11 +71,15 @@ import { OrderTableRow } from "@/components/OrderTableRow";
 import { useQuery } from "@tanstack/react-query";
 import { getOrders } from "@/utils/axiosOrdersUtils";
 import { OrderProps } from "@/types/orderType";
-import { isLogged } from "@/utils/account.service";
+import { isLogged, isTokenExpired } from "@/utils/account.service";
 import { AvatarDropdown } from "@/components/AvatarDropdown";
 import OrdersBreadcrumb from "@/components/breadcrumbs/OrdersBreadcrumb";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export const OrdersDashboard = () => {
+  const router = useRouter();
+
   const {
     data: orders,
     isSuccess,
@@ -90,6 +93,12 @@ export const OrdersDashboard = () => {
     },
     enabled: isLogged(),
   });
+
+  useEffect(() => {
+    if (!isLogged() || isTokenExpired()) {
+      router.push("/login");
+    }
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -141,9 +150,6 @@ export const OrdersDashboard = () => {
                             products={order.products}
                           />
                         ))}
-                        {/* <OrderTableRow id={order} />
-                        <OrderTableRow />
-                        <OrderTableRow /> */}
                       </TableBody>
                     </Table>
                   </CardContent>

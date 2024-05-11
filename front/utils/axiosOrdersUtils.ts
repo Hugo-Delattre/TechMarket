@@ -21,9 +21,8 @@ export const getOrders = async () => {
 
 export const getOrder = async (id: string) => {
   try {
-    const response = await axiosInstance.get(
-      `https://pokeapi.co/api/v2/pokemon/${id}`
-    );
+    const response = await axiosInstance.get(`orders/${id}`);
+    console.log("response", response.data);
     return response;
   } catch (error) {
     console.error("Error fetching Order:", error);
