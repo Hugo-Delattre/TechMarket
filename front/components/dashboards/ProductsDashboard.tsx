@@ -86,8 +86,14 @@ export function ProductsDashboard() {
       const response = await getProducts();
       return response.data;
     },
+    staleTime: 1000 * 60 * 15,
+    gcTime: Infinity,
   });
   const router = useRouter();
+
+  function toggleAddingProduct() {
+    setisAddingProduct(!isAddingProduct);
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -135,7 +141,7 @@ export function ProductsDashboard() {
             )}
             {isAddingProduct && (
               <div className="mt-2">
-                <AddProductForm />
+                <AddProductForm toggleAddingProduct={toggleAddingProduct} />
               </div>
             )}
             <TabsContent value="all">

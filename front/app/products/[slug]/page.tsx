@@ -30,6 +30,14 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
   const router = useRouter();
   const [isEditing, setisEditing] = useState(false);
 
+  function toggleIsEditing() {
+    setisEditing(!isEditing);
+  }
+  
+  if (!isLogged()) {
+    router.push("/login");
+  }
+
   const { data: productData, isLoading } = useQuery<ProductProps>({
     queryKey: ["product", params.slug],
     queryFn: () => getProduct(params.slug),
@@ -139,7 +147,10 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
             )}
             {!isLoading && isEditing && (
               <div>
-                <EditProductForm {...productData} />
+                <EditProductForm
+                  {...productData}
+                  toggleIsEditing={toggleIsEditing}
+                />
               </div>
             )}
           </main>

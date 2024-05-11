@@ -50,6 +50,8 @@ export const Cart = () => {
       return response.data;
     },
     enabled: isLogged(),
+    staleTime: 1000 * 60 * 15,
+    gcTime: Infinity,
   });
 
   const queryClient = useQueryClient();

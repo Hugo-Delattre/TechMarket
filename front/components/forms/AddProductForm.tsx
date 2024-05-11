@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { faker } from "@faker-js/faker";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "@/utils/axiosLoginUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
@@ -37,24 +38,40 @@ const AddProductFormSchema = z.object({
   price: z.string(),
 });
 
-export function AddProductForm() {
+export function AddProductForm({ toggleAddingProduct }: any) {
   const form = useForm<z.infer<typeof AddProductFormSchema>>({
     resolver: zodResolver(AddProductFormSchema),
-    defaultValues: {},
+    defaultValues: {
+      photo: faker.image.imageUrl(),
+      // photo:
+      // "https://media.ldlc.com/r150/ld/products/00/05/96/31/LD0005963148.jpg",
+      // },
+      name: faker.commerce.productName(),
+      description: faker.commerce.productDescription(),
+      price: faker.commerce.price(),
+    },
   });
 
   const { toast } = useToast();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: (product) => createProduct(product),
-    onSuccess: (data) => {
-      console.log("product created data", data);
-
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
       toast({
         title: "Success!",
         description: "Your product have been created successfully!",
       });
+      // toggleAddingProduct();
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
+      toggleAddingProduct();
     },
     onError: (error) => {
       console.error("error", error);
@@ -66,8 +83,6 @@ export function AddProductForm() {
   });
 
   function onSubmit(data: z.infer<typeof AddProductFormSchema>) {
-    console.log("submit data", data);
-
     mutate(data);
   }
 
@@ -108,11 +123,7 @@ export function AddProductForm() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Description"
-                        {...field}
-                        type="password"
-                      />
+                      <Input placeholder="Description" {...field} type="text" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,7 +137,7 @@ export function AddProductForm() {
                     <FormLabel>Photo</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="https://photo.jpg"
+                        placeholder="https://media.ldlc.com/r150/ld/products/00/05/96/31/LD0005963148.jpg"
                         {...field}
                         type="text"
                       />
@@ -149,17 +160,20 @@ export function AddProductForm() {
                 )}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Submit
-            </Button>
+            <div>
+              <Button type="submit" className="w-full mb-2">
+                Submit
+              </Button>
+              <Button
+                variant={"outline"}
+                onClick={toggleAddingProduct}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </div>
           </form>
         </Form>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline">
-            Sign up
-          </Link>
-        </div>
       </CardContent>
     </Card>
   );

@@ -24,7 +24,7 @@ export const getProduct = async (id: string) => {
 export const createProduct = async (product: any) => {
   try {
     const jwt = localStorage.getItem("jwt");
-    const response = await axiosInstance.post("/products", product, {
+    const response = await axiosInstance.post("/products/", product, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },

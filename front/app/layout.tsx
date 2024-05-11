@@ -28,7 +28,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // Time before refetch on next render - 5mn
+        gcTime: 1000 * 60 * 25, // Garbage collection - 25mn
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
 
   return (
     <html lang="en">

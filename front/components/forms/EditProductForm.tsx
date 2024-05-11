@@ -24,14 +24,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "@/utils/axiosLoginUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { updateProduct } from "@/utils/axiosProductsUtils";
 
 const EditProductFormSchema = z.object({
-  id: z.number(),
   name: z.string(),
   description: z.string(),
   photo: z.string(),
@@ -39,11 +38,12 @@ const EditProductFormSchema = z.object({
 });
 
 interface EditProductFormProps {
-  id: number;
+  id: string;
   name: string;
   description: string;
   photo: string;
   price: string;
+  toggleIsEditing: () => void;
 }
 
 export type EditProductFormFields = z.infer<typeof EditProductFormSchema>;
@@ -54,17 +54,32 @@ export function EditProductForm({
   description,
   photo,
   price,
+  toggleIsEditing,
 }: EditProductFormProps) {
   const form = useForm<EditProductFormFields>({
     resolver: zodResolver(EditProductFormSchema),
+    defaultValues: {
+      photo: photo,
+      name: name,
+      description: description,
+      price: price.toString(),
+    },
   });
 
   const { toast } = useToast();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
-    mutationFn: updateProduct,
+    mutationFn: ({ id, data }) => updateProduct(id, data),
     onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["products", id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      toggleIsEditing();
       router.push("/products");
       toast({
         title: "Le produit a bien été modifié !",
@@ -72,16 +87,18 @@ export function EditProductForm({
     },
     onError: (error) => {
       console.error("error", error);
-      toast({
-        title: "Error",
-        description: "An error occured",
-      });
+      // toast({
+      //   title: "Error",
+      //   description: "An error occured",
+      // });
+      router.push("/products");
     },
   });
 
   function onSubmit(data: z.infer<typeof EditProductFormSchema>) {
-    // mutate(data.data);
-    console.log("coucou", data);
+    console.log("dataOnSUbmit", data);
+
+    mutate({ id, data });
   }
 
   return (
@@ -98,7 +115,6 @@ export function EditProductForm({
                 <FormField
                   control={form.control}
                   name="name"
-                  defaultValue={name}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Name</FormLabel>
@@ -113,7 +129,6 @@ export function EditProductForm({
               <FormField
                 control={form.control}
                 name="description"
-                defaultValue={description}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
@@ -127,7 +142,6 @@ export function EditProductForm({
               <FormField
                 control={form.control}
                 name="photo"
-                defaultValue={photo}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Photo</FormLabel>
@@ -138,24 +152,19 @@ export function EditProductForm({
                   </FormItem>
                 )}
               />
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="price"
-                defaultValue={Number(price)}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder={price.toString()}
-                        {...field}
-                        type="number"
-                      />
+                      <Input placeholder={price} {...field} type="text" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
             </div>
             <Button type="submit" className="w-full">
               Submit

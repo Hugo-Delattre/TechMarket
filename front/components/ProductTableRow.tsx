@@ -42,9 +42,15 @@ export const ProductTableRow = ({
         />
       </TableCell>
       <TableCell className="font-medium">
-        <Link href={`/products/${id}`}>{name}</Link>
+        <Link href={`/products/${id}`}>
+          {name.length > 30 ? `${name.substring(0, 30)}...` : name}
+        </Link>
       </TableCell>
-      <TableCell>{description}</TableCell>
+      <TableCell>
+        {description.length > 40
+          ? `${description.substring(0, 40)}...`
+          : description}
+      </TableCell>
       <TableCell></TableCell>
       <TableCell></TableCell>
       <TableCell>{price}€</TableCell>
@@ -55,7 +61,7 @@ export const ProductTableRow = ({
           size="icon"
           variant="ghost"
           onClick={() => {
-            isLogged() ? mutate(id) : router.push("/login");
+            isLogged() ? mutate(id.toString()) : router.push("/login");
           }}
         >
           <ShoppingCart className="h-4 w-4" />
