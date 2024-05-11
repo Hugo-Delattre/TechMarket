@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs } from "@/components/ui/tabs";
 import { ProductProps } from "@/types/productType";
-import { isLogged, logout } from "@/utils/account.service";
+import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
 import { deleteProduct, getProduct } from "@/utils/axiosProductsUtils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PanelLeft, PlusCircle, Search } from "lucide-react";
@@ -33,7 +33,7 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
   function toggleIsEditing() {
     setisEditing(!isEditing);
   }
-  
+
   if (!isLogged()) {
     router.push("/login");
   }
@@ -136,7 +136,12 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
                       className="mt-6"
                       variant="outline"
                       onClick={() => {
-                        mutate(params.slug);
+                        if (isTokenExpired() || !isLogged()) {
+                          logout();
+                          router.push("/login");
+                        } else {
+                          mutate(params.slug);
+                        }
                       }}
                     >
                       Delete

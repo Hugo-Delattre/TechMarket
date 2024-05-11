@@ -24,7 +24,7 @@ import { getCart, removeFromCart, validateCart } from "@/utils/axiosCartUtils";
 import { useRouter } from "next/navigation";
 import { toast, useToast } from "@/components/ui/use-toast";
 import { CartProps } from "@/types/cartType";
-import { isLogged } from "@/utils/account.service";
+import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
 
 export const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -46,8 +46,12 @@ export const Cart = () => {
   } = useQuery<CartProps[]>({
     queryKey: ["cart"],
     queryFn: async () => {
-      const response = await getCart();
-      return response.data;
+      if (isTokenExpired()) {
+        router.push("/login");
+      } else {
+        const response = await getCart();
+        return response.data;
+      }
     },
     enabled: isLogged(),
     staleTime: 1000 * 60 * 15,
@@ -117,7 +121,12 @@ export const Cart = () => {
                   <X
                     opacity={0.4}
                     onClick={() => {
-                      mutate(product.id);
+                      if (isTokenExpired() || !isLogged()) {
+                        logout();
+                        router.push("/login");
+                      } else {
+                        mutate(product.id);
+                      }
                     }}
                     size={20}
                     className="cursor-pointer hover:opacity-100 transition-opacity duration-200 rounded-sm p-[0.1rem] ml-1"
@@ -138,7 +147,8 @@ export const Cart = () => {
               disabled={isValidationPending || isValidationSuccess}
               className="w-full"
               onClick={() => {
-                if (!isLogged()) {
+                if (isTokenExpired() || !isLogged()) {
+                  logout();
                   router.push("/login");
                 } else {
                   validationMutate(cartData?.id);

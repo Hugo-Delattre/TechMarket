@@ -2,7 +2,7 @@
 
 import { ProfileDashboard } from "@/components/dashboards/ProfileDashboard";
 import { LoginForm } from "@/components/forms/LoginForm";
-import { isLogged } from "@/utils/account.service";
+import { isLogged, isTokenExpired } from "@/utils/account.service";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -10,7 +10,7 @@ const ProfilePage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    !isLogged() && router.push("/login");
+    (!isLogged() || isTokenExpired()) && router.push("/login");
   }, []);
 
   return (

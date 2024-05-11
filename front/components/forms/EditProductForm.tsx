@@ -29,6 +29,7 @@ import { loginUser } from "@/utils/axiosLoginUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { updateProduct } from "@/utils/axiosProductsUtils";
+import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
 
 const EditProductFormSchema = z.object({
   name: z.string(),
@@ -96,9 +97,12 @@ export function EditProductForm({
   });
 
   function onSubmit(data: z.infer<typeof EditProductFormSchema>) {
-    console.log("dataOnSUbmit", data);
-
-    mutate({ id, data });
+    if (isTokenExpired() || !isLogged()) {
+      logout();
+      router.push("/login");
+    } else {
+      mutate({ id, data });
+    }
   }
 
   return (

@@ -34,6 +34,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
+import { useRouter } from "next/navigation";
 
 export const OrderTableRow = ({
   id,
@@ -41,6 +43,7 @@ export const OrderTableRow = ({
   creationDate,
   products,
 }: OrderProps) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (id: string) => deleteOrder(id),
@@ -109,7 +112,12 @@ export const OrderTableRow = ({
                       <Button
                         className="bg-red-900"
                         onClick={() => {
-                          mutate(id);
+                          if (isTokenExpired() || !isLogged()) {
+                            logout();
+                            router.push("/login");
+                          } else {
+                            mutate(id);
+                          }
                         }}
                       >
                         Delete

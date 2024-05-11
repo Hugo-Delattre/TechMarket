@@ -30,6 +30,7 @@ import { loginUser } from "@/utils/axiosLoginUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { createProduct } from "@/utils/axiosProductsUtils";
+import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
 
 const AddProductFormSchema = z.object({
   photo: z.string(),
@@ -83,7 +84,12 @@ export function AddProductForm({ toggleAddingProduct }: any) {
   });
 
   function onSubmit(data: z.infer<typeof AddProductFormSchema>) {
-    mutate(data);
+    if (isTokenExpired() || !isLogged()) {
+      logout();
+      router.push("/login");
+    } else {
+      mutate(data);
+    }
   }
 
   return (

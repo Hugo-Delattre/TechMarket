@@ -1,4 +1,4 @@
-const jwt_decode = require("jwt-decode");
+import { jwtDecode } from "jwt-decode";
 
 export const saveToken = (token: string) => {
   localStorage.setItem("jwt", token);
@@ -31,21 +31,41 @@ export const getHeaders = () => {
   return headers;
 };
 
-export const getUserRole = () => {
-  let token = localStorage?.getItem("jwt");
-  if (token) {
-    let decodedToken = decodeToken(token);
-    return decodedToken.role;
-  } else {
-    return null;
-  }
-};
+// export const getUserRole = () => {
+//   let token = localStorage?.getItem("jwt");
+//   if (token) {
+//     let decodedToken = decodeToken(token);
+//     return decodedToken.role;
+//   } else {
+//     return null;
+//   }
+// };
 
 export const decodeToken = (token: string) => {
-  const decodedToken = jwt_decode(token);
+  const decodedToken = jwtDecode(token);
   return decodedToken;
 };
 
 export const logout = () => {
-  localStorage.removeItem("jwt");
+  if (localStorage.getItem("jwt")) {
+    localStorage.removeItem("jwt");
+  }
+};
+
+export const isTokenExpired = () => {
+  const token = localStorage.getItem("jwt");
+  if (token === null) {
+    return true;
+  } else if (token) {
+    let decodedToken = decodeToken(token);
+    console.log("decodedToken.exp", decodedToken.exp);
+    console.log("Date.now() / 1000", Date.now() / 1000);
+    const isTokenExpired = decodedToken.exp < Date.now() / 1000;
+    if (isTokenExpired) {
+      localStorage.removeItem("jwt");
+    }
+    return decodedToken.exp < Date.now() / 1000;
+  }
+
+  return false;
 };

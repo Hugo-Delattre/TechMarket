@@ -3,13 +3,13 @@
 import { ProfileDashboard } from "@/components/dashboards/ProfileDashboard";
 import React, { useEffect } from "react";
 import { LoginForm } from "@/components/forms/LoginForm";
-import { isLogged } from "@/utils/account.service";
+import { isLogged, isTokenExpired } from "@/utils/account.service";
 import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const router = useRouter();
   useEffect(() => {
-    isLogged() && router.push("/profile");
+    isLogged() && !isTokenExpired() && router.push("/profile");
   }, []);
 
   return (

@@ -7,7 +7,7 @@ import { addToCart } from "@/utils/axiosCartUtils";
 import { ProductProps } from "@/types/productType";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { isLogged } from "@/utils/account.service";
+import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
 import { useRouter } from "next/navigation";
 
 export const ProductTableRow = ({
@@ -61,7 +61,12 @@ export const ProductTableRow = ({
           size="icon"
           variant="ghost"
           onClick={() => {
-            isLogged() ? mutate(id.toString()) : router.push("/login");
+            if (isTokenExpired() || !isLogged()) {
+              logout();
+              router.push("/login");
+            } else {
+              mutate(id.toString());
+            }
           }}
         >
           <ShoppingCart className="h-4 w-4" />
