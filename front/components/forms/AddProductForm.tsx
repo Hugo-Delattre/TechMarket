@@ -31,25 +31,24 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { createProduct } from "@/utils/axiosProductsUtils";
 import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
+import { techPictures } from "@/utils/techPictures";
 
 const AddProductFormSchema = z.object({
   photo: z.string(),
   name: z.string(),
   description: z.string(),
-  price: z.string(),
+  price: z.number(),
 });
 
 export function AddProductForm({ toggleAddingProduct }: any) {
   const form = useForm<z.infer<typeof AddProductFormSchema>>({
     resolver: zodResolver(AddProductFormSchema),
     defaultValues: {
-      photo: faker.image.imageUrl(),
-      // photo:
-      // "https://media.ldlc.com/r150/ld/products/00/05/96/31/LD0005963148.jpg",
-      // },
+      photo: techPictures[Math.floor(Math.random() * techPictures.length)],
+      // photo: faker.image.urlLoremFlickr({ category: "technics" }),
       name: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
-      price: faker.commerce.price(),
+      price: Math.floor(Number(faker.commerce.price())),
     },
   });
 
@@ -159,7 +158,7 @@ export function AddProductForm({ toggleAddingProduct }: any) {
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
-                      <Input placeholder="15" {...field} type="text" />
+                      <Input placeholder="15" {...field} type="number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

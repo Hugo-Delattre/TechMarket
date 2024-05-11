@@ -2,6 +2,7 @@
 
 import { ProfileDashboard } from "@/components/dashboards/ProfileDashboard";
 import { LoginForm } from "@/components/forms/LoginForm";
+import { ProfileForm } from "@/components/forms/ProfileForm";
 import { isLogged, isTokenExpired } from "@/utils/account.service";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -22,7 +23,7 @@ const ProfilePage = () => {
         height: "100vh",
       }}
     >
-      {isLogged() && <ProfileDashboard />}
+      {isLogged() && <ProfileForm />}
     </div>
   );
 };

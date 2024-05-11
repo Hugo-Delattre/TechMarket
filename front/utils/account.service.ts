@@ -13,7 +13,7 @@ export const isLogged = () => {
 };
 
 export const isAdmin = () => {
-  let userRole = getUserRole();
+  let userRole = getUserRoles();
   return userRole?.includes("ROLE_ADMIN");
 };
 
@@ -31,15 +31,18 @@ export const getHeaders = () => {
   return headers;
 };
 
-// export const getUserRole = () => {
-//   let token = localStorage?.getItem("jwt");
-//   if (token) {
-//     let decodedToken = decodeToken(token);
-//     return decodedToken.role;
-//   } else {
-//     return null;
-//   }
-// };
+export const getUserRoles = () => {
+  let token = localStorage?.getItem("jwt");
+  if (token) {
+    let decodedToken = decodeToken(token);
+    console.log("decodedToken", decodedToken);
+
+    // const isAdmin = getUserRoles().includes("ROLE_ADMIN");
+    return decodedToken.roles;
+  } else {
+    return null;
+  }
+};
 
 export const decodeToken = (token: string) => {
   const decodedToken = jwtDecode(token);
@@ -64,7 +67,7 @@ export const isTokenExpired = () => {
     if (isTokenExpired) {
       localStorage.removeItem("jwt");
     }
-    return decodedToken.exp < Date.now() / 1000;
+    return isTokenExpired;
   }
 
   return false;

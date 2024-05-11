@@ -13,7 +13,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs } from "@/components/ui/tabs";
 import { ProductProps } from "@/types/productType";
-import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
+import {
+  getUserRoles,
+  isLogged,
+  isTokenExpired,
+  logout,
+} from "@/utils/account.service";
 import { deleteProduct, getProduct } from "@/utils/axiosProductsUtils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PanelLeft, PlusCircle, Search } from "lucide-react";
@@ -25,6 +30,7 @@ import { Cart } from "@/components/Cart";
 import { EditProductForm } from "@/components/forms/EditProductForm";
 import { AvatarDropdown } from "@/components/AvatarDropdown";
 import { ProductBreacrumb } from "@/components/breadcrumbs/ProductBreacrumb";
+import { addToCart } from "@/utils/axiosCartUtils";
 
 const ProductPage = ({ params }: { params: { slug: string } }) => {
   const router = useRouter();
@@ -32,10 +38,6 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
 
   function toggleIsEditing() {
     setisEditing(!isEditing);
-  }
-
-  if (!isLogged()) {
-    router.push("/login");
   }
 
   const { data: productData, isLoading } = useQuery<ProductProps>({
@@ -52,6 +54,22 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
       });
       router.push("/products");
     },
+    onError: (err) => alert(err.message),
+  });
+
+  const {
+    mutate: addToCartMutate,
+    isPending,
+    variables,
+  } = useMutation({
+    //TODO implement optimistic update
+    mutationFn: (id: string) => addToCart(id),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+    },
+    mutationKey: ["addToCart"],
     onError: (err) => alert(err.message),
   });
 
@@ -111,7 +129,12 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
                     <Button
                       className="w-[120px] mt-6"
                       onClick={() => {
-                        console.log("on click");
+                        if (isTokenExpired() || !isLogged()) {
+                          logout();
+                          router.push("/login");
+                        } else {
+                          addToCartMutate(params.slug);
+                        }
                       }}
                     >
                       Add to Cart
@@ -122,31 +145,34 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
                       </Button>{" "}
                     </Link>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      className="mt-6"
-                      variant="outline"
-                      onClick={() => {
-                        setisEditing(!isEditing);
-                      }}
-                    >
-                      {isEditing ? "Cancel editing" : "Edit"}
-                    </Button>
-                    <Button
-                      className="mt-6"
-                      variant="outline"
-                      onClick={() => {
-                        if (isTokenExpired() || !isLogged()) {
-                          logout();
-                          router.push("/login");
-                        } else {
-                          mutate(params.slug);
-                        }
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                  {isLogged() && (
+                    // getUserRoles().includes("ROLE_ADMIN") &&
+                    <div className="flex gap-2">
+                      <Button
+                        className="mt-6"
+                        variant="outline"
+                        onClick={() => {
+                          setisEditing(!isEditing);
+                        }}
+                      >
+                        {isEditing ? "Cancel editing" : "Edit"}
+                      </Button>
+                      <Button
+                        className="mt-6"
+                        variant="outline"
+                        onClick={() => {
+                          if (isTokenExpired() || !isLogged()) {
+                            logout();
+                            router.push("/login");
+                          } else {
+                            mutate(params.slug);
+                          }
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

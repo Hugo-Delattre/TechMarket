@@ -16,7 +16,6 @@ export const getUsers = async () => {
 
 export const getLoggedUserData = async () => {
   try {
-    // const headers = getHeaders();
     const jwt = localStorage.getItem("jwt");
     const response = await axiosInstance.get("/users", {
       headers: {
@@ -33,7 +32,9 @@ export const getLoggedUserData = async () => {
 
 export const getUser = async (id: string) => {
   try {
-    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    const response = await axiosInstance.get(
+      `https://pokeapi.co/api/v2/pokemon/${id}`
+    );
     return response;
   } catch (error) {
     console.error("Error fetching User:", error);
@@ -43,7 +44,7 @@ export const getUser = async (id: string) => {
 
 export const createUser = async (User: any) => {
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       "https://pokeapi.co/api/v2/pokemon",
       User
     );
@@ -54,12 +55,16 @@ export const createUser = async (User: any) => {
   }
 };
 
-export const updateUser = async (id: string, User: any) => {
+export const updateUser = async (User: any) => {
   try {
-    const response = await axios.put(
-      `https://pokeapi.co/api/v2/pokemon/${id}`,
-      User
-    );
+    const jwt = localStorage.getItem("jwt");
+    console.log("UserInsideUpdateUserCallback", User);
+
+    const response = await axiosInstance.put(`/users`, User, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
     return response;
   } catch (error) {
     console.error("Error updating User:", error);
@@ -69,7 +74,7 @@ export const updateUser = async (id: string, User: any) => {
 
 export const deleteUser = async (id: string) => {
   try {
-    const response = await axios.delete(
+    const response = await axiosInstance.delete(
       `https://pokeapi.co/api/v2/pokemon/${id}`
     );
     console.log("response", response.data);

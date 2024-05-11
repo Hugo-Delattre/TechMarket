@@ -70,12 +70,12 @@ class ApiLoginController extends AbstractController
         $user->setLastname($content["name"]);
         $user->setFirstname($content["description"]);
         $user->setEmail($content["photo"]);
-        $user->setPassword(
-            $userPasswordHasher->hashPassword(
-                $user,
-                $content["password"]
-            )
-        );
+        // $user->setPassword(
+        //     $userPasswordHasher->hashPassword(
+        //         $user,
+        //         $content["password"]
+        //     )
+        // );
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
             $error_message = new Response((string) $errors, 400);

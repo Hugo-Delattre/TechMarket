@@ -67,7 +67,12 @@ import { BreadcrumbNav } from "@/components/Breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "@/utils/axiosProductsUtils";
 import { ProductProps } from "@/types/productType";
-import { isAdmin, isLogged, logout } from "@/utils/account.service";
+import {
+  getUserRoles,
+  isAdmin,
+  isLogged,
+  logout,
+} from "@/utils/account.service";
 import { useRouter } from "next/navigation";
 import { AvatarDropdown } from "@/components/AvatarDropdown";
 import { useState } from "react";
@@ -122,6 +127,7 @@ export function ProductsDashboard() {
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <Tabs defaultValue="all">
             {isLogged() && (
+              // && getUserRoles().includes("ROLE_ADMIN")
               <div className="flex items-center">
                 <div className="ml-auto flex items-center gap-2">
                   <Button
