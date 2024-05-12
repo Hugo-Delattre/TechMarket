@@ -10,8 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { OrderProps } from "@/types/orderType";
-import { getOrders, updateOrder } from "@/utils/axiosOrdersUtils";
 import {
   useMutation,
   useMutationState,
@@ -25,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { toast, useToast } from "@/components/ui/use-toast";
 import { CartProps } from "@/types/cartType";
 import { isLogged, isTokenExpired, logout } from "@/utils/account.service";
+import { LoadingSpinner } from "@/components/ui/spinner";
 
 export const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -88,6 +87,11 @@ export const Cart = () => {
     onError: (err) => alert(err.message),
   });
 
+  const variables = useMutationState({
+    filters: { mutationKey: ["addToCart"], status: "pending" },
+    select: (mutation) => mutation.state.variables,
+  });
+
   return (
     <Card className="flex flex-col items-center">
       <CardHeader>
@@ -135,6 +139,17 @@ export const Cart = () => {
               </React.Fragment>
             );
           })}
+        {/* {variables &&
+          productsData &&
+          variables.length > 0 &&
+          variables.map((variable) => {
+            return (
+              <div key={variable}>
+                <Skeleton className="w-[138px] h-[80px]" />
+                <Separator />
+              </div>
+            );
+          })} */}
       </CardContent>
       <CardFooter className="w-full flex flex-col">
         {cartData && cartData?.products.length > 0 && (
@@ -161,6 +176,9 @@ export const Cart = () => {
             >
               Order
             </Button>
+            {variables && variables.length > 0 && (
+              <LoadingSpinner className="mt-4" />
+            )}
           </>
         )}
       </CardFooter>
