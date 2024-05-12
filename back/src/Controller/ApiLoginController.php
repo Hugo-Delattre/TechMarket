@@ -64,12 +64,13 @@ class ApiLoginController extends AbstractController
         ]);
     }
     #[Route('/users', name: 'update_user', methods: ['PUT'])]
-    public function updateUser(User $user, Request $request, UserPasswordHasherInterface $userPasswordHasher,  SerializerInterface $serializer,  ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
+    public function updateUser(Request $request, UserPasswordHasherInterface $userPasswordHasher,  SerializerInterface $serializer,  ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
         $content = json_decode($request->getContent(), true);
-        $user->setLastname($content["name"]);
-        $user->setFirstname($content["description"]);
-        $user->setEmail($content["photo"]);
+        $user = $this->getUser();
+        $user->setLastname($content["lastName"]);
+        $user->setFirstname($content["firstName"]);
+        $user->setEmail($content["email"]);
         // $user->setPassword(
         //     $userPasswordHasher->hashPassword(
         //         $user,
