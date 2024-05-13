@@ -92,7 +92,6 @@ export const Cart = () => {
     <Card className="flex flex-col items-center">
       <CardHeader>
         <CardTitle>Your cart</CardTitle>
-
         <CardDescription>{"Order when you're ready."}</CardDescription>
       </CardHeader>
       {/* {cart.length > 0 && (
@@ -165,6 +164,6 @@ export const Cart = () => {
           </>
         )}
       </CardFooter>
-    </Card>
+    </Card >
   );
 };

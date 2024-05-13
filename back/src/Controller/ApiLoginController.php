@@ -36,33 +36,6 @@ class ApiLoginController extends AbstractController
             ->toArray();
         return JsonResponse::fromJsonString($serializer->serialize($user, 'json', $context));
     }
-    #[Route('/register', name: 'register', methods: ['POST'])]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $user = new User();
-        $content = json_decode($request->getContent(), true);
-        $user->setPassword(
-            $userPasswordHasher->hashPassword(
-                $user,
-                $content["password"]
-            )
-        );
-        $user->setEmail($content["email"]);
-        $user->setRoles(["ROLE_USER"]);
-        $user->setLastname($content["lastName"]);
-        $user->setFirstname($content["firstName"]);
-        $user->setLogin($content["login"]);
-        $entityManager->persist($user);
-        $entityManager->flush();
-
-        // do anything else you need here, like send an email
-
-        return $security->login($user, 'json_login', 'login');
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ApiLoginController.php',
-        ]);
-    }
     #[Route('/users', name: 'update_user', methods: ['PUT'])]
     public function updateUser(Request $request, UserPasswordHasherInterface $userPasswordHasher,  SerializerInterface $serializer,  ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {

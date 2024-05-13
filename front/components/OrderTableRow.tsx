@@ -60,7 +60,6 @@ export const OrderTableRow = ({
       <TableCell className="hidden md:table-cell">
         <Link href={`/orders/${id}`}>#{id}</Link>
       </TableCell>
-
       <div>
         <TooltipProvider>
           <Tooltip>
@@ -78,21 +77,21 @@ export const OrderTableRow = ({
                     />
                   ))}
                 </Link>
-              </TableCell>
-            </TooltipTrigger>
+              </TableCell >
+            </TooltipTrigger >
             <TooltipContent>
               <Link href={`/orders/${id}`}>
                 <p>{products.map((product) => product.name).join(", ")}</p>
               </Link>
             </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+          </Tooltip >
+        </TooltipProvider >
+      </div >
       <TableCell className="hidden md:table-cell">
         <Link href={`/orders/${id}`}>
           {format(creationDate.date, "yyyy-MM-dd")}
         </Link>
-      </TableCell>
+      </TableCell >
       <TableCell>
         <Link href={`/orders/${id}`}>{totalPrice}€</Link>
       </TableCell>
@@ -137,10 +136,10 @@ export const OrderTableRow = ({
                   </DialogHeader>
                 </DialogContent>
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </Dialog>
-      </TableCell>
-    </TableRow>
+            </DropdownMenuContent >
+          </DropdownMenu >
+        </Dialog >
+      </TableCell >
+    </TableRow >
   );
 };

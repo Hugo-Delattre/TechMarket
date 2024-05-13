@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -79,7 +78,6 @@ import { useEffect } from "react";
 
 export const OrdersDashboard = () => {
   const router = useRouter();
-
   const {
     data: orders,
     isSuccess,
@@ -150,15 +148,16 @@ export const OrdersDashboard = () => {
                             products={order.products}
                           />
                         ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </main>
-      </div>
-    </div>
+                      </TableBody >
+                    </Table >
+                  </CardContent >
+                </Card >
+              </TabsContent >
+            </Tabs >
+
+          </div >
+        </main >
+      </div >
+    </div >
   );
 };
