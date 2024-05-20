@@ -149,7 +149,7 @@ export const Cart = () => {
           })} */}
       </CardContent>
       <CardFooter className="w-full flex flex-col">
-        {cartData && cartData?.products.length > 0 && (
+        {cartData && cartData?.products?.length > 0 && (
           <>
             <p className="font-semibold text-center pb-1">
               {cartData && cartData.totalPrice + "€"}

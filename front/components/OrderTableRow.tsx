@@ -66,7 +66,7 @@ export const OrderTableRow = ({
             <TooltipTrigger>
               <TableCell className="font-medium flex gap-1">
                 <Link href={`/orders/${id}`} className="font-medium flex gap-1">
-                  {products.slice(0, 6).map((product) => (
+                  {products?.slice(0, 6).map((product) => (
                     <img
                       key={product.id}
                       width="50"
@@ -81,7 +81,7 @@ export const OrderTableRow = ({
             </TooltipTrigger >
             <TooltipContent>
               <Link href={`/orders/${id}`}>
-                <p>{products.map((product) => product.name).join(", ")}</p>
+                <p>{products?.map((product) => product.name).join(", ")}</p>
               </Link>
             </TooltipContent>
           </Tooltip >
@@ -89,7 +89,7 @@ export const OrderTableRow = ({
       </div >
       <TableCell className="hidden md:table-cell">
         <Link href={`/orders/${id}`}>
-          {format(creationDate.date, "yyyy-MM-dd")}
+          {format(creationDate, "yyyy-MM-dd")}
         </Link>
       </TableCell >
       <TableCell>
