@@ -3,9 +3,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -13,7 +10,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import { Cart } from "@/components/Cart";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -46,7 +42,6 @@ export default function RootLayout({
           {children}
           <Toaster />
         </body>
-        <ReactQueryDevtools />
       </QueryClientProvider>
     </html>
   );

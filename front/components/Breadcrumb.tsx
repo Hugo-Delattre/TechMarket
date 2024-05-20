@@ -9,11 +9,9 @@ import {
 import Link from "next/link";
 
 export type BreadcrumbProps = {
-  // href: string;
-  // label: string;
 };
 
-export const BreadcrumbNav = (props: BreadcrumbProps) => {
+export const BreadcrumbNav = () => {
   return (
     <Breadcrumb className="hidden md:flex">
       <BreadcrumbList>

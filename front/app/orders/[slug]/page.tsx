@@ -62,14 +62,6 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
             {isLogged() && <AvatarDropdown />}
           </header>
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-            {/* {isLoading && ( */}
-            {/* // <div className="rounded-lg border bg-card text-card-foreground shadow-sm h-[50rem] p-6"> */}
-            {/* <Skeleton className="w-full h-[40rem]" /> */}
-            {/* <Skeleton className="w-[286px] h-[32px] mb-2" /> */}
-            {/* <Skeleton className="w-[286px] h-[16px]" /> */}
-            {/* <div className="mb-2"></div> */}
-            {/* // </div> */}
-            {/* )} */}
             {!isLoading && (
               <div>
                 {!isLoading && orderData?.data && (

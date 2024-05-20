@@ -26,7 +26,6 @@ export function ProfileDashboard() {
     queryKey: ["user"],
     queryFn: async () => {
       const response = await getLoggedUserData();
-      console.log("userData", response.data);
       return response.data;
     },
   });

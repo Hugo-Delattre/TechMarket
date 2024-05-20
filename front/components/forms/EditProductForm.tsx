@@ -88,10 +88,6 @@ export function EditProductForm({
     },
     onError: (error) => {
       console.error("error", error);
-      // toast({
-      //   title: "Error",
-      //   description: "An error occured",
-      // });
       router.push("/products");
     },
   });
@@ -111,7 +107,6 @@ export function EditProductForm({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            // onSubmit={console.log("coucou")}
             className="w-full space-y-6"
           >
             <div className="grid gap-4">

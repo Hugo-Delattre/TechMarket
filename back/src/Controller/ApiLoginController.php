@@ -12,12 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle;
 
 #[Route('/api')]
 class ApiLoginController extends AbstractController
@@ -44,12 +42,6 @@ class ApiLoginController extends AbstractController
         $user->setLastname($content["lastName"]);
         $user->setFirstname($content["firstName"]);
         $user->setEmail($content["email"]);
-        // $user->setPassword(
-        //     $userPasswordHasher->hashPassword(
-        //         $user,
-        //         $content["password"]
-        //     )
-        // );
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
             $error_message = new Response((string) $errors, 400);

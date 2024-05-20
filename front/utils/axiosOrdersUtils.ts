@@ -1,6 +1,5 @@
 import { OrderProps } from "@/types/orderType";
 import { axiosInstance } from "@/utils/axiosInstance";
-import axios from "axios";
 
 export const getOrders = async () => {
   try {
@@ -22,20 +21,9 @@ export const getOrders = async () => {
 export const getOrder = async (id: string) => {
   try {
     const response = await axiosInstance.get(`orders/${id}`);
-    console.log("response", response.data);
     return response;
   } catch (error) {
     console.error("Error fetching Order:", error);
-    throw error;
-  }
-};
-
-export const updateOrder = async (id: string, Order: OrderProps) => {
-  try {
-    const response = await axiosInstance.put(`orders/${id}`, Order);
-    return response;
-  } catch (error) {
-    console.error("Error updating Order:", error);
     throw error;
   }
 };

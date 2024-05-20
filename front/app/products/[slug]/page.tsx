@@ -62,7 +62,6 @@ const ProductPage = ({ params }: { params: { slug: string } }) => {
     isPending,
     variables,
   } = useMutation({
-    //TODO implement optimistic update
     mutationFn: (id: string) => addToCart(id),
     onSettled: () => {
       queryClient.invalidateQueries({

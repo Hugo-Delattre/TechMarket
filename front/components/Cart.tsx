@@ -59,11 +59,8 @@ export const Cart = () => {
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
-    //TODO implement optimistic update
     mutationFn: (id: number) => removeFromCart(id),
     onSettled: () => {
-      console.log("invalidating cart query");
-
       queryClient.invalidateQueries({
         queryKey: ["cart"],
       });
@@ -114,7 +111,7 @@ export const Cart = () => {
       )} */}
       <CardContent className="space-y-2 flex flex-col">
         {cartData &&
-          cartData?.products.length > 0 &&
+          cartData?.products?.length > 0 &&
           cartData.products.map((product) => {
             return (
               <React.Fragment key={product.id}>

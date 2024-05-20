@@ -35,8 +35,6 @@ export const getUserRoles = () => {
   let token = localStorage?.getItem("jwt");
   if (token) {
     let decodedToken = decodeToken(token);
-    console.log("decodedToken", decodedToken);
-
     // const isAdmin = getUserRoles().includes("ROLE_ADMIN");
     return decodedToken.roles;
   } else {
@@ -61,8 +59,6 @@ export const isTokenExpired = () => {
     return true;
   } else if (token) {
     let decodedToken = decodeToken(token);
-    console.log("decodedToken.exp", decodedToken.exp);
-    console.log("Date.now() / 1000", Date.now() / 1000);
     const isTokenExpired = decodedToken.exp < Date.now() / 1000;
     if (isTokenExpired) {
       localStorage.removeItem("jwt");

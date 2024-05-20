@@ -1,4 +1,3 @@
-import { isTokenExpired } from "@/utils/account.service";
 import { axiosInstance } from "@/utils/axiosInstance";
 
 export const getCart = async () => {

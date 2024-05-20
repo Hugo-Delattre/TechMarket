@@ -45,7 +45,6 @@ export function AddProductForm({ toggleAddingProduct }: any) {
     resolver: zodResolver(AddProductFormSchema),
     defaultValues: {
       photo: techPictures[Math.floor(Math.random() * techPictures.length)],
-      // photo: faker.image.urlLoremFlickr({ category: "technics" }),
       name: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
       price: Math.floor(Number(faker.commerce.price())),
@@ -66,7 +65,6 @@ export function AddProductForm({ toggleAddingProduct }: any) {
         title: "Success!",
         description: "Your product have been created successfully!",
       });
-      // toggleAddingProduct();
       window.scrollTo({
         top: document.body.scrollHeight,
         behavior: "smooth",

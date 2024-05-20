@@ -49,7 +49,6 @@ export function ProfileForm() {
     queryKey: ["user"],
     queryFn: async () => {
       const response = await getLoggedUserData();
-      console.log("userData", response.data);
       return response.data;
     },
   });
@@ -78,7 +77,6 @@ export function ProfileForm() {
 
   const { mutate } = useMutation({
     mutationFn: (user) => {
-      console.log("userBeforeUpdate", user);
       updateUser(user);
     },
     onSuccess: (data) => {

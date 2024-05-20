@@ -35,7 +35,6 @@ export const AvatarDropdown = (props: AvatarProps) => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel
           onClick={() => {
-            console.log("hello");
           }}
         >
           Account

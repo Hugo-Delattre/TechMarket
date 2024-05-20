@@ -20,7 +20,6 @@ export const ProductTableRow = ({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutate, isPending, variables } = useMutation({
-    //TODO implement optimistic update
     mutationFn: (id: string) => addToCart(id),
     onSettled: () => {
       queryClient.invalidateQueries({

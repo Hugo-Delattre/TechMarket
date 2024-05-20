@@ -2,9 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
-use App\Entity\User;
-use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,15 +9,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
-use phpDocumentor\Reflection\Types\Integer;
 use App\Entity\Order;
 use App\Repository\OrderRepository;
-
-use App\Utils\SchemeInsertOrder;
-use OpenApi\Attributes\Schema;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 
@@ -109,7 +100,6 @@ class CartController extends AbstractController
         $product = $productRepository->findOneById($productId);
         $currentOrder = null;
         if ($product) {
-            //TODO: set current user
             $currentUser = $this->getUser();
             if ($currentUser->getOrders()->count() < 1) {
                 return $this->json(['error' => '0 order found'], Response::HTTP_BAD_REQUEST);
